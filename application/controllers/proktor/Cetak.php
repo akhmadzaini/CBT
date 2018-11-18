@@ -3,7 +3,8 @@
 }
 
 require_once APPPATH . 'controllers/proktor/Home_proktor.php';
-require FCPATH . 'vendor/autoload.php';
+require_once FCPATH . 'vendor/autoload.php';
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -164,6 +165,15 @@ class Cetak extends Home_proktor{
     header("Content-Disposition: attachment; filename=presensi_$ujian_id.xlsx");
     $writer->save('php://output');
     
+  }
+
+  function berita_acara(){
+    require_once FCPATH . 'vendor/setasign/fpdf/fpdf.php';
+    $pdf = new FPDF();
+    $pdf->AddPage();
+    $pdf->SetFont('Arial','B',16);
+    $pdf->Cell(40,10,'Hello World!');
+    $pdf->Output();
   }
   
   private function __garis_pinggir($sheet, $area){
