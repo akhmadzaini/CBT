@@ -1,7 +1,6 @@
 {
     "require": {
         "php-curl-class/php-curl-class": "^8.3",
-        "phpoffice/phpspreadsheet": "^1.5",
         "setasign/fpdf": "1.8.1"
     }
 }

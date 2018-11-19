@@ -5,9 +5,6 @@
 require_once APPPATH . 'controllers/proktor/Home_proktor.php';
 require_once FCPATH . 'vendor/autoload.php';
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
 class Cetak extends Home_proktor{
 	function index(){
     $sql = 'SELECT ujian_id, judul, status_soal, mulai, selesai, jml_soal
@@ -22,85 +19,80 @@ class Cetak extends Home_proktor{
     ORDER BY nis ";
     $data = $this->db->query($sql)->result();
     
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-    $sheet->getColumnDimension('A')->setWidth(2);
-    $sheet->getColumnDimension('B')->setWidth(2);
-    $sheet->getColumnDimension('C')->setWidth(8);
-    $sheet->getColumnDimension('D')->setWidth(2);
-    $sheet->getColumnDimension('E')->setWidth(8);
-    $sheet->getColumnDimension('F')->setWidth(24);
-    $sheet->getColumnDimension('G')->setWidth(2);
-    $sheet->getColumnDimension('H')->setWidth(2);
-    $sheet->getColumnDimension('I')->setWidth(2);
-    $sheet->getColumnDimension('J')->setWidth(2);
-    $sheet->getColumnDimension('K')->setWidth(8);
-    $sheet->getColumnDimension('L')->setWidth(2);
-    $sheet->getColumnDimension('M')->setWidth(8);
-    $sheet->getColumnDimension('N')->setWidth(24);
-    
-    // Border untuk judul
-    //$this->__garis_pinggir($sheet, 'A2:F8');
-    //$this->__garis_pinggir($sheet, 'C3:C7');
-    //$this->__garis_pinggir($sheet, 'I2:M8');
-    //$this->__garis_pinggir($sheet, 'J3:J7');
-    $sheet->setCellValue('E3', 'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA');
-    $sheet->setCellValue('E4', 'KOTA PROBOLINGGO');
-    $sheet->setCellValue('E5', 'KARTU UJIAN PESERTA');
-    
-    $baris_awal = 2;
-    $baris_terakhir = 13;
-    foreach($data as $r){
-      $this->__garis_pinggir($sheet, "B$baris_awal".":"."G$baris_terakhir");
-	  $sheet->mergeCells('E'.($baris_awal + 1).':F'.($baris_awal + 1));	
-	  $sheet->mergeCells('E'.($baris_awal + 2).':F'.($baris_awal + 2));	
-	  $sheet->mergeCells('E'.($baris_awal + 3).':F'.($baris_awal + 3));		
-	  $sheet->setCellValue('E' . ($baris_awal + 1), 'DISDIPENDIK KOTA PROBOLINGGO');
-      $sheet->setCellValue('E' . ($baris_awal + 2), get_app_config('NAMA_SEKOLAH'));
-      $sheet->setCellValue('E' . ($baris_awal + 3), 'KARTU UJIAN PESERTA');
-      $this->__garis_pinggir($sheet, 'C' . ($baris_awal + 1) . ':C' . ($baris_awal + 3));
-      $this->__garis_pinggir($sheet, 'C' . ($baris_awal + 6) . ':C' . ($baris_awal + 10));
-      $sheet->setCellValue('E' . ($baris_awal + 6), 'USER');
-      $sheet->setCellValue('F' . ($baris_awal + 6), $r->login);
-      $sheet->setCellValue('E' . ($baris_awal + 7), 'PASS');
-      $sheet->setCellValue('F' . ($baris_awal + 7), $r->password);
-      $sheet->setCellValue('E' . ($baris_awal + 8), 'SERVER');
-      $sheet->setCellValue('F' . ($baris_awal + 8), $r->server);
-      $sheet->setCellValue('E' . ($baris_awal + 9), 'NISN');
-      $sheet->setCellValue('F' . ($baris_awal + 9), $r->nis);
-      $sheet->setCellValue('E' . ($baris_awal + 10), 'NAMA');
-      $sheet->setCellValue('F' . ($baris_awal + 10), $r->nama);
-	  
-	  
-      $this->__garis_pinggir($sheet, "J$baris_awal".":"."N$baris_terakhir");
-	  $sheet->mergeCells('M'.($baris_awal + 1).':N'.($baris_awal + 1));	
-	  $sheet->mergeCells('M'.($baris_awal + 2).':N'.($baris_awal + 2));	
-	  $sheet->mergeCells('M'.($baris_awal + 3).':N'.($baris_awal + 3));		
-	  $sheet->setCellValue('M' . ($baris_awal + 1), 'DISDIPENDIK KOTA PROBOLINGGO');
-      $sheet->setCellValue('M' . ($baris_awal + 2), get_app_config('NAMA_SEKOLAH'));
-      $sheet->setCellValue('M' . ($baris_awal + 3), 'KARTU MEJA');
-      $this->__garis_pinggir($sheet, 'K' . ($baris_awal + 1) . ':K' . ($baris_awal + 3));
-      $this->__garis_pinggir($sheet, 'K' . ($baris_awal + 6) . ':K' . ($baris_awal + 10));
-      $sheet->setCellValue('M' . ($baris_awal + 6), 'USER');
-      $sheet->setCellValue('N' . ($baris_awal + 6), $r->login);
-      $sheet->setCellValue('M' . ($baris_awal + 7), 'PASS');
-      $sheet->setCellValue('N' . ($baris_awal + 7), $r->password);
-      $sheet->setCellValue('M' . ($baris_awal + 8), 'SERVER');
-      $sheet->setCellValue('N' . ($baris_awal + 8), $r->server);
-      $sheet->setCellValue('M' . ($baris_awal + 9), 'NISN');
-      $sheet->setCellValue('N' . ($baris_awal + 9), $r->nis);
-      $sheet->setCellValue('M' . ($baris_awal + 10), 'NAMA');
-      $sheet->setCellValue('N' . ($baris_awal + 10), $r->nama);
-      
-      $tambahan = ($baris_terakhir % 43 == 0) ? 6 : 3;
-      $baris_awal = $baris_terakhir + $tambahan;
-      $baris_terakhir = $baris_awal + 11;
+	
+	$siswa = array();
+	$no = 1;
+    foreach($data as $k => $r){
+		$siswa[]=array($r->login,$r->password,$r->server,$r->nis,$r->nama);
     }
-    
-    $writer = new Xlsx($spreadsheet);
-    header("Content-type: application/vnd.ms-excel");
-    header("Content-Disposition: attachment; filename=kartu_peserta_$ujian_id.xlsx");
-    $writer->save('php://output');
+	//$siswa[$r][5]
+	
+    require_once FCPATH . 'vendor/setasign/fpdf/fpdf.php';
+    $pdf = new FPDF();
+	$lembar=intval(count($siswa) / 5);
+	for($t=0;$t<=$lembar;$t++){
+		$pdf->AddPage();
+		$no = 0;
+		while($no < 5) {
+		  if ($no+($t*5) >= count($siswa))
+		  {
+			break;
+		  }
+	      $nourut=$no+($t*5);
+		  
+		  $pdf->Image('./assets/kartu.jpg',10,$no*55+13,94,0,'JPG');
+		  $pdf->Image('./assets/kartu.jpg',105,$no*55+13,94,0,'JPG');
+		  $pdf->Image('./assets/logo_dinas.png',16,$no*55+16,11,0,'PNG');
+		  $pdf->Image('./assets/logo_dinas.png',111,$no*55+16,11,0,'PNG');
+		  $pdf->Image('./assets/foto.png',18,$no*55+37,20,0,'PNG');
+		  $pdf->Image('./assets/foto.png',113,$no*55+37,20,0,'PNG');
+		
+		  //$pdf->Image('./assets/logo_dinas.png',50,100,100,0,'PNG');
+		  $pdf -> SetY($no*55+16); 
+		  $pdf -> SetFont('Arial', '', 9);  
+		  $pdf->Cell(10 ,2,'',0,0);$pdf->Cell(90 ,4,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA',0,0,'C');
+		  $pdf->Cell(5 ,2,'',0,0);$pdf->Cell(90 ,4,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA',0,1,'C');
+		  $pdf -> SetFont('Arial', 'B', 11);  
+		  $pdf->Cell(10 ,2,'',0,0);$pdf->Cell(90 ,5,get_app_config('NAMA_SEKOLAH'),0,0,'C');
+		  $pdf->Cell(5 ,2,'',0,0);$pdf->Cell(90 ,5,get_app_config('NAMA_SEKOLAH'),0,1,'C');
+		  $pdf -> SetFont('Arial', '', 9);  
+		  $pdf->Cell(10 ,2,'',0,0);$pdf->Cell(90 ,4,'KARTU UJIAN SISWA',0,0,'C');
+		  $pdf->Cell(5 ,2,'',0,0);$pdf->Cell(90 ,4,'KARTU TEMPEL MEJA',0,1,'C');
+		  
+		  $pdf->Cell(90 ,3,'_____________________________________________',0,0,'C');
+		  $pdf->Cell(8 ,3,'',0,0,'C');
+		  $pdf->Cell(90 ,3,'_____________________________________________',0,1,'C');
+		  $pdf->Cell(189 ,4,'',0,1);//end of line
+		  $pdf->SetFont('Arial','',8);
+		  $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'User',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][0],0,0);
+		  $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'User',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][0],0,1);
+		  $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'Pass',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][1],0,0);
+		  $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'Pass',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][1],0,1);
+		  $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'Server',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][2],0,0);
+		  $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'Server',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][2],0,1);
+		  $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'NISN',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][3],0,0);
+		  $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'NISN',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][3],0,1);
+		  $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'Nama',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][4],0,0);
+		  $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'Nama',0,0);$pdf->Cell(3 ,5,':',0,0);
+		  $pdf->Cell(30 ,5,$siswa[$nourut][4],0,1);
+			
+			$no++;
+		}
+  }	
+	
+    $pdf->Output();
+	
+	
+   
     
   }
   
@@ -109,107 +101,187 @@ class Cetak extends Home_proktor{
     $sql = "SELECT nis, nama FROM peserta WHERE ujian_id = '$ujian_id'
     ORDER BY nis ";
     $data = $this->db->query($sql)->result();
-    
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-    
-    // Atur lebar kolom
-    $sheet->getColumnDimension('B')->setWidth(21);
-    $sheet->getColumnDimension('C')->setWidth(30);
-    $sheet->getColumnDimension('D')->setWidth(16);
-    $sheet->getColumnDimension('E')->setWidth(16);
-    
-    // merger cell
-    $sheet->mergeCells('A2:E2');
-    $sheet->mergeCells('A3:E3');
-    $sheet->mergeCells('A4:E4');
-    $sheet->mergeCells('A5:E5');
-    $sheet->mergeCells('D8:E8');
-    
-    // Atur judul
-    $sheet->setCellValue('A2', 'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA');
-    $sheet->setCellValue('A3', 'KOTA PROBOLINGGO');
-    $sheet->setCellValue('A4', get_app_config('NAMA_SEKOLAH'));
-    $sheet->setCellValue('A5', 'DAFTAR KEHADIRAN');
-    
-    // format rata
-    $this->__format_rata_tengah($sheet, 'A2:D8');
-
-    $sheet->setCellValue('A8', 'No.');
-    $sheet->setCellValue('B8', 'NISN');
-    $sheet->setCellValue('C8', 'NAMA');
-    $sheet->setCellValue('D8', 'TTD');
-    $sheet->getRowDimension('8')->setRowHeight(30);
-    
-    // Atur isian data
+	
+    $siswa = array();
+    $no = 1;
     foreach($data as $k => $r){
-      $no = $k + 1;
-      $baris = $k + 9;
-      $sheet->getRowDimension($baris)->setRowHeight(30);
-      $sheet->setCellValue('A' . $baris, "$no");
-      $sheet->setCellValue('B' . $baris, $r->nis);
-      $sheet->setCellValue('C' . $baris, $r->nama);
-      $kolom = ($no % 2 == 0) ? 'E' : 'D';
-      $sheet->setCellValue($kolom . $baris, $no . '. ');
-      $this->__garis_pinggir($sheet, "D$baris:E$baris");
+		$siswa[]=array($r->nis,$r->nama);
     }
+	  //$siswa[$r][5]
+	
+    require_once FCPATH . 'vendor/setasign/fpdf/fpdf.php';
+    $pdf = new FPDF();
+	  $lembar=intval(count($siswa) / 20);
+	  for($t=0;$t<=$lembar;$t++){
+		  $pdf->AddPage();
+      $pdf->SetFont('Arial','B',13);
+      $pdf->Image('./assets/logo_dinas.png',17,13,15,0,'PNG');
+      
+      //$pdf->Image('./assets/logo_dinas.png',50,100,100,0,'PNG');
+      $pdf->Cell(189 ,4,'',0,1);//end of line
 
-    // format border
-    $this->__garis_semua($sheet, 'A8:E8');
-    $this->__garis_semua($sheet, 'A9:C' . (8 + count($data)));
-
-    
-    // luaran
-    $writer = new Xlsx($spreadsheet);
-    header("Content-type: application/vnd.ms-excel");
-    header("Content-Disposition: attachment; filename=presensi_$ujian_id.xlsx");
-    $writer->save('php://output');
-    
+      $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO',0,1,'C');
+      $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DAFTAR HADIR UJIAN_____CBT',0,1,'C');
+      $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'TAHUN PELAJARAN 2018/2019',0,1,'C');
+      $pdf->Cell(40 ,6,'______________________________________________________________________________',0,1);
+      $pdf->Cell(189 ,4,'',0,1);//end of line
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(54 ,6,'1. Kota',0,0);
+								$pdf->Cell(3 ,6,':',0,0);
+								$pdf->Cell(40 ,6,'PROBOLINGGO',0,1);
+      $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Sekolah/Madrasah',0,0);
+                  $pdf->Cell(3 ,6,':',0,0);
+                  $pdf->Cell(40 ,6,get_app_config('NAMA_SEKOLAH'),0,1);
+      $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Tempat Ujian',0,0);
+                  $pdf->Cell(3 ,6,':',0,0);
+                  $pdf->Cell(40 ,6,'__________________________',0,1);
+      $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Ruang',0,0);
+                  $pdf->Cell(3 ,6,':',0,0);
+                  $pdf->Cell(40 ,6,'__________________________',0,1);
+      $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Hari / Tanggal',0,0);
+                  $pdf->Cell(3 ,6,':',0,0);
+                  $pdf->Cell(40 ,6,'__________________________',0,1);
+      $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Mata Pelajaran',0,0);
+                  $pdf->Cell(3 ,6,':',0,0);
+                  $pdf->Cell(40 ,6,'__________________________',0,1);
+                  
+      
+      // Atur isian data
+      $pdf->Cell(189 ,4,'',0,1);//end of line
+      $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(3 ,4,'',0,0);$pdf->Cell(7 ,6,'NO',1,0,'C');
+                  $pdf->Cell(30 ,6,'NOPES',1,0,'C');
+                  $pdf->Cell(80 ,6,'NAMA',1,0,'C');
+                  $pdf->Cell(69 ,6,'TANDA TANGAN',1,1,'C');
+      $pdf->SetFont('Arial','',11);
+      $no = 0;
+      while($no < 20) {
+        if ($no+($t*20) >= count($siswa))
+        {
+        break;
+        }
+          $nourut=$no+($t*20);
+        $pdf->Cell(3 ,4,'',0,0);$pdf->Cell(7 ,6,$nourut+1,1,0,'C');
+                  $pdf->Cell(30 ,6,$siswa[$nourut][0],1,0);
+                  $pdf->Cell(80 ,6,$siswa[$nourut][1],1,0);
+                  if (($nourut+1) % 2 != 0){
+                    $pdf->Cell(69 ,6,($nourut+1).'......',1,1);
+                  }else{
+                    $pdf->Cell(69 ,6,($nourut+1).'......',1,1,'C');
+                  }
+                  
+        
+        
+        $no++;
+      }
+      $pdf->Cell(189 ,4,'',0,1);//end of line
+      $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'Yang membuat berita acara (Jabatan,Nama,TTD)',0,1);
+      $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1. Pengawas',0,0);
+                  $pdf->Cell(70 ,6,'________________________',0,0);
+                  $pdf->Cell(40 ,6,'1.___________________',0,1);
+      $pdf->Cell(15 ,4,'',0,0);$pdf->Cell(35 ,6,'NIP',0,0);
+								$pdf->Cell(70 ,6,'________________________',0,1);
+      $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'2. Proktor',0,0);
+                  $pdf->Cell(70 ,6,'________________________',0,0);
+                  $pdf->Cell(40 ,6,'2.___________________',0,1);
+      $pdf->Cell(15 ,4,'',0,0);$pdf->Cell(35 ,6,'NIP',0,0);
+                  $pdf->Cell(70 ,6,'________________________',0,1);
+      $pdf->Cell(189 ,4,'',0,1);//end of line
+      $pdf->SetFont('Arial','IU',12);
+      $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'Catatan',0,1);
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1 Lembar Untuk Sekolah',0,1);
+      $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1 Lembar Dinas Pendidikan',0,1);
+    }	
+	
+    $pdf->Output();
+	
   }
 
   function berita_acara(){
     require_once FCPATH . 'vendor/setasign/fpdf/fpdf.php';
     $pdf = new FPDF();
     $pdf->AddPage();
-    $pdf->SetFont('Arial','B',16);
-    $pdf->Cell(40,10,'Berita Acara Ujian');
+    $pdf->SetFont('Arial','B',13);
+    $pdf->Image('./assets/logo_dinas.png',17,13,15,0,'PNG');
+    
+    //$pdf->Image('./assets/logo_dinas.png',50,100,100,0,'PNG');
+    $pdf->Cell(189 ,4,'',0,1);//end of line
+      $pdf->SetFont('Arial','',12);
+
+    $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO',0,1,'C');
+    $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'BERITA ACARA PELAKSANAAN UJIAN_____CBT',0,1,'C');
+    $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'TAHUN PELAJARAN 2018/2019',0,1,'C');
+    $pdf->Cell(40 ,6,'______________________________________________________________________________',0,1);
+    $pdf->Cell(189 ,4,'',0,1);//end of line
+    $pdf->Cell(189 ,4,'',0,1);//end of line
+
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(189 ,6,'Pada hari ini____________tanggal____________bulan____________tahun 2018',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(189 ,6,'telah diselenggarakan ujian_____CBT untuk Program Studi____________. Mata Pelajaran',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(189 ,6,'_________________',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(189 ,6,'dari pukul____________sampai dengan pukul____________sesi____________',0,1);
+    $pdf->Cell(189 ,4,'',0,1);//end of line
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(54 ,6,'1. Kota',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'PROBOLINGGO',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Sekolah/Madrasah',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Tempat Ujian',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Ruang',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Jumlah Seharusnya',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Jumlah Hadir',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Jumlah Tidak Hadir',0,0);
+                $pdf->Cell(3 ,6,':',0,0);
+                $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'No.Peserta Tidak Hadir',0,0);
+                $pdf->Cell(3 ,6,':',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'2. Catatan selama pelaksanaan ujian :',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'Pengawas',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'Proktor',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'Teknisi',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'________________________________________________________________________',0,1);
+    $pdf->Cell(189 ,4,'',0,1);//end of line
+    $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(40 ,6,'Yang membuat berita acara (Jabatan,Nama,TTD)',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1. Pengawas',0,0);
+                $pdf->Cell(70 ,6,'________________________',0,0);
+                $pdf->Cell(40 ,6,'1.___________________',0,1);
+    $pdf->Cell(15 ,4,'',0,0);$pdf->Cell(35 ,6,'NIP',0,0);
+                $pdf->Cell(70 ,6,'________________________',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'2. Proktor',0,0);
+                $pdf->Cell(70 ,6,'________________________',0,0);
+                $pdf->Cell(40 ,6,'2.___________________',0,1);
+    $pdf->Cell(15 ,4,'',0,0);$pdf->Cell(35 ,6,'NIP',0,0);
+                $pdf->Cell(70 ,6,'________________________',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'3. Teknisi',0,0);
+                $pdf->Cell(70 ,6,'________________________',0,0);
+                $pdf->Cell(40 ,6,'3.___________________',0,1);
+    $pdf->Cell(15 ,4,'',0,0);$pdf->Cell(35 ,6,'NIP',0,0);
+                $pdf->Cell(70 ,6,'________________________',0,1);
+    $pdf->Cell(189 ,4,'',0,1);//end of line
+      $pdf->SetFont('Arial','IU',12);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'Catatan',0,1);
+      $pdf->SetFont('Arial','',12);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1 Lembar Untuk Sekolah',0,1);
+    $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1 Lembar Dinas Pendidikan',0,1);
+	
+	
     $pdf->Output();
   }
   
-  private function __garis_pinggir($sheet, $area){
-    $styleArray = [
-      'borders' => [
-        'outline' => [
-          'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-          'color' => ['argb' => '000'],
-        ],
-      ],
-    ];
-    $sheet->getStyle($area)->applyFromArray($styleArray);
-  }
-
-  private function __garis_semua($sheet, $area){
-    $styleArray = [
-      'borders' => [
-        'allBorders' => [
-          'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-          'color' => ['argb' => '000'],
-        ],
-      ],
-    ];
-    $sheet->getStyle($area)->applyFromArray($styleArray);
-  }
-  
-  private function __format_rata_tengah($sheet, $area){
-    $format = array(
-      'font' => [
-        'bold' => true,
-      ],
-      'alignment' => [
-        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-        ]
-      );
-    $sheet->getStyle($area)->applyFromArray($format);
-  }
 }
