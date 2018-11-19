@@ -48,6 +48,12 @@
                 <?php endforeach?>
 							</select>
             </p>
+
+            <?php if(!empty($ujian_id)):?>
+              <p>
+                <button class="btn btn-primary btn-peserta-baru waves-effect">Peserta baru</button>
+              </p>
+            <?php endif?>
             
             <table class="table table-striped table-hover tabel-peserta dataTable" id="app">
               <thead>
@@ -85,10 +91,55 @@
           </div>
         </div>
       </section>
-      
-      
-      
-      
+
+      <div class="modal fade in" id="modal-tambah-peserta" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content detail-peserta">
+            <div class="modal-header">
+              <h4 class="modal-title" id="defaultModalLabel">Tambah peserta baru</h4>
+            </div>
+            <form action="<?=site_url("?d=proktor&c=monitor&m=tambah_peserta")?>" method="post" id="frm-tambah-peserta">
+              <div class="modal-body">
+                <input type="hidden" name="ujian_id" value="<?=$ujian_id?>">
+                  <label>NIS</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" class="form-control" name="nis" placeholder="Nomor Induk Siswa" value="" required="">
+                      </div>
+                  </div>
+                  <label>Nama</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" class="form-control" name="nama" placeholder="Nama lengkap" value="" required="">
+                      </div>
+                  </div>
+                  <label>Login</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" class="form-control" name="login" placeholder="Login ujian" value="" required="">
+                      </div>
+                  </div>
+                  <label>Password</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="password" class="form-control" name="password" placeholder="Kata sandi" value="" required="">
+                      </div>
+                  </div>
+                  <label>Server</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" class="form-control" name="server" placeholder="ID server lokal" value="" required="">
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary waves-effect pull-left">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <div class="modal fade in app2" id="modal-detil-peserta" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content detail-peserta">
@@ -254,6 +305,10 @@
                 });
               }
             });
+          });          
+
+          $(document).on('click', '.btn-peserta-baru', function(){
+            $("#modal-tambah-peserta").modal('show');
           });
           
         });

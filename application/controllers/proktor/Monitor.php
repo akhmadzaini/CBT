@@ -93,7 +93,19 @@ class Monitor extends Home_proktor{
 		$this->db->set('status', '0');
 		$this->db->update('peserta');
 		json_output(200, array('message' => 'ok'));
-	}
+  }
+  
+  function tambah_peserta(){
+    $post = $this->input->post();
+    $this->db->set('ujian_id', $post['ujian_id']);
+    $this->db->set('nis', $post['nis']);
+    $this->db->set('login', $post['login']);
+    $this->db->set('password', $post['password']);
+    $this->db->set('nama', $post['nama']);
+    $this->db->set('server', $post['server']);
+    $this->db->insert('peserta');
+    redirect('d=proktor&c=monitor&m=peserta&ujian_id=' . $post['ujian_id']);
+  }
 
 	private function get_jawaban_peserta(){
 		// ambil biodata data peserta
