@@ -17,7 +17,7 @@ class Profil extends Home_proktor{
 		$this->db->set('nama', $post['nama']);
 		$this->db->set('email', $post['email']);
 		if(!empty($post['password'])){
-			$this->db->set('password', "AES_ENCRYPT('$post[password]', '$secret'", FALSE);
+			$this->db->set('password', "AES_ENCRYPT('$post[password]', '$secret')", FALSE);
 		}
 		$this->db->where('login',  $this->session->login);
 		$this->db->update('proktor');

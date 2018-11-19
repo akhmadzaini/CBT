@@ -23,12 +23,12 @@ class Cetak extends Home_proktor{
 	$siswa = array();
 	$no = 1;
     foreach($data as $k => $r){
-		$siswa[]=array($r->login,$r->password,$r->server,$r->nis,$r->nama);
+		$siswa[]=array($r->login,$r->password,$r->server,$r->nis,substr($r->nama, 0, 25));
     }
 	//$siswa[$r][5]
 	
     require_once FCPATH . 'vendor/setasign/fpdf/fpdf.php';
-    $pdf = new FPDF();
+    $pdf = new FPDF('P', 'mm', 'legal');
 	$lembar=intval(count($siswa) / 5);
 	for($t=0;$t<=$lembar;$t++){
 		$pdf->AddPage();

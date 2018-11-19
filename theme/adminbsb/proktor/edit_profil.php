@@ -55,7 +55,7 @@
                                 <label>Konfirmasi Password</label>
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <input type="password2" class="form-control" name="password2" value="">
+                                        <input type="password" class="form-control" name="password2" value="">
                                     </div>
                                     <small class="help-block">Ketik ulang password</small>
                                 </div>
