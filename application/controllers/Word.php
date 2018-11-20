@@ -54,7 +54,7 @@ class Word extends CI_Controller {
     $response = array(array(
       'isAdmin' => array('1', 'int'),
       'url'  => array(base_url(),'string'),
-      'blogName'  => array('USBN','string'),
+      'blogName'  => array(base_url(),'string'),
       'blogid'    => array('1','int'),
       'xmlrpc'    => array(site_url('xmlrpc'),'string')                  
     ),'struct');

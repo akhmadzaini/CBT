@@ -42,8 +42,8 @@ class Cetak extends Home_proktor{
 		  
 		  $pdf->Image('./assets/kartu.jpg',10,$no*55+13,94,0,'JPG');
 		  $pdf->Image('./assets/kartu.jpg',105,$no*55+13,94,0,'JPG');
-		  $pdf->Image('./assets/logo_dinas.png',16,$no*55+16,11,0,'PNG');
-		  $pdf->Image('./assets/logo_dinas.png',111,$no*55+16,11,0,'PNG');
+		  $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),16,$no*55+16,11,0,'PNG');
+		  $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),111,$no*55+16,11,0,'PNG');
 		  $pdf->Image('./assets/foto.png',18,$no*55+37,20,0,'PNG');
 		  $pdf->Image('./assets/foto.png',113,$no*55+37,20,0,'PNG');
 		
@@ -115,7 +115,7 @@ class Cetak extends Home_proktor{
 	  for($t=0;$t<=$lembar;$t++){
 		  $pdf->AddPage();
       $pdf->SetFont('Arial','B',13);
-      $pdf->Image('./assets/logo_dinas.png',17,13,15,0,'PNG');
+      $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),17,13,15,0,'PNG');
       
       //$pdf->Image('./assets/logo_dinas.png',50,100,100,0,'PNG');
       $pdf->Cell(189 ,4,'',0,1);//end of line
@@ -203,7 +203,7 @@ class Cetak extends Home_proktor{
     $pdf = new FPDF();
     $pdf->AddPage();
     $pdf->SetFont('Arial','B',13);
-    $pdf->Image('./assets/logo_dinas.png',17,13,15,0,'PNG');
+    $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),17,13,15,0,'PNG');
     
     //$pdf->Image('./assets/logo_dinas.png',50,100,100,0,'PNG');
     $pdf->Cell(189 ,4,'',0,1);//end of line

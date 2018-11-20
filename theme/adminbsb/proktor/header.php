@@ -97,7 +97,7 @@ function is_active($th){
             <div class="user-info">
                 <div class="image">
                     <!--<img src="<?=base_url('theme/adminbsb/')?>images/user.png" width="48" height="48" alt="User" />-->
-                    <img src="<?=get_app_config('LOGO_SEKOLAH')?>" alt="Logo" width="100" height="100">
+                    <img src="<?=(base_url('assets/') . get_app_config('LOGO_SEKOLAH'))?>" alt="Logo" width="100" height="100">
                 </div>
                 <div class="info-container">
                     <div class="name">

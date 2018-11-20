@@ -19,7 +19,7 @@
                 <div class="col-md-12">
                     <div id="logo">
                         <div id="logo-container">
-                            <img src="<?=get_app_config('LOGO_SEKOLAH')?>">
+                            <img src="<?=(base_url('assets/') . get_app_config('LOGO_SEKOLAH'))?>">
                         </div>
                         <div style="float: left; margin-left: 10px">
                             <h3><?=get_app_config('NAMA_SEKOLAH')?> </h3>

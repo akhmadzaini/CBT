@@ -14,7 +14,7 @@ class Config extends Home_proktor{
 		modif_app_config('NAMA_SEKOLAH', $this->input->post('nama_sekolah'));
 		$this->session->pesan = 'sukses';
 		if(!empty($_FILES['logo']['name'])){		
-			$config['upload_path'] = './';
+			$config['upload_path'] = './assets/';
 			$config['allowed_types'] = 'gif|jpg|png';
 			$config['max_size']     = '512';
 			$config['file_name'] = 'logo';
