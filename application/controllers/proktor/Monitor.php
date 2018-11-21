@@ -49,7 +49,8 @@ class Monitor extends Home_proktor{
 		$ujian_id = $this->input->get('ujian_id');
 		if(!empty($ujian_id)){
 			$this->db->where('ujian_id', $ujian_id);
-			$this->db->order_by('last_login', 'desc');
+			$this->db->order_by('LENGTH(login)');
+			$this->db->order_by('login');
 			$this->db->select('*');
 			$this->db->select('(SELECT COUNT(*) FROM peserta_jawaban WHERE ujian_id = peserta.ujian_id AND login = peserta.login AND ragu = 0) AS terjawab');
 			$this->db->select('(SELECT COUNT(*) FROM peserta_jawaban WHERE ujian_id = peserta.ujian_id AND login = peserta.login AND ragu = 1) AS ragu');

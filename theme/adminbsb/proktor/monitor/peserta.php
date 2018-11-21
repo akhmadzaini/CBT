@@ -58,17 +58,22 @@
             <table class="table table-striped table-hover tabel-peserta dataTable" id="app">
               <thead>
                 <tr>
-                  <th width="25%">Nama</th>
+                  <th width="25%">Login - Nama</th>
+                  <th width="15%">Server</th>
                   <th width="60%">Progres</th>
-                  <th width="15%">Terakhir Login</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="item in ujian.peserta">
                   <td>
+                    {{item.login}} -
                     <a href="javascript:void(0);"  :data-login="item.login" :data-ujian_id="item.ujian_id" class="btn-detail-peserta">{{item.nama}}</a>
                     <span :class="'badge bg-' + getWarnaStatus(item.status)"><small>{{getStatus(item.status)}} </small> </span>
+                    <a href="javascript:void(0)" v-if="item.status!=0" :data-login="item.login" data-ujian_id="<?=$ujian_id?>" class="btn-reset-peserta-direct">
+                      <span  class="badge bg-blue-grey"><small>reset</small></span>
+                    </a>
                   </td>
+                  <td>{{item.server}}</td>
                   <td>
                     <div class="progress">
                       <div class="progress-bar progress-bar-success" :style="'width:' + getPersenSoal(item.terjawab) + '%;'">
@@ -79,9 +84,7 @@
                             {{(ujian.jml_soal - item.ragu - item.terjawab)}} kosong</div>
                           </div>
                         </td>
-                        <td>{{item.last_login}}</td>
-                      </tr>
-                      
+                      </tr>                      
                     </tbody>
                   </table>
                   
@@ -309,6 +312,37 @@
 
           $(document).on('click', '.btn-peserta-baru', function(){
             $("#modal-tambah-peserta").modal('show');
+          });
+
+          $(document).on('click', '.btn-reset-peserta-direct', function(){
+            var btn = $(this);
+            swal({
+              title: "Anda yakin ?",
+              text: "Anda akan me-reset login peserta ini, anda yakin ?",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Ya, Saya yakin",
+              cancelButtonText: "Tidak",
+              closeOnConfirm: true
+            },function(isReset){
+              if(isReset){
+                var data = {
+                  d: 'proktor',
+                  c: 'monitor',
+                  m: 'reset_peserta',
+                  login: btn.data('login'),
+                  ujian_id: btn.data('ujian_id')
+                }
+                $('.body').waitMe();
+                $.get('<?=site_url()?>', data, function(hasil){
+                  if(hasil.message == 'ok'){
+                    app.segarkanPeserta();
+                    $('.body').waitMe('hide');
+                  }
+                });
+              }
+            });
           });
           
         });
