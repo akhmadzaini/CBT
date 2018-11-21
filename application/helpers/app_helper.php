@@ -242,3 +242,27 @@ function data_do_reset(){
     mkdir(FCPATH . 'images');
     
 }
+
+function bersihkan_gambar($ujian_id){
+  
+  $CI =& get_instance();
+  $sql = "SELECT konten FROM ujian WHERE ujian_id = '$ujian_id'";
+  $r = $CI->db->query($sql)->row();
+  if($r->konten !== null){
+    
+    $dom = new DOMDocument();
+    $dom->loadHTML($r->konten);
+    $tag_gambar = $dom->getElementsByTagName("img");
+    
+    foreach($tag_gambar as $img){
+      $gbr = FCPATH . $img->getAttribute('src');
+      // log_message('custom', 'menghapus : ' . $gbr);
+      if(file_exists($gbr)){
+        unlink($gbr);
+        log_message('custom', 'menghapus :' . $gbr);
+      }else{
+        log_message('custom', $gbr . ' tidak ada');
+      }
+    }
+  }
+}

@@ -79,7 +79,7 @@ class Word extends CI_Controller {
 		if($this->__lolos_verifikasi_ujian($ujian)){
       $ujian['judul'] = trim($konten['title']);
       
-      $this->__bersihkan_gambar($ujian['ujian_id']);
+      bersihkan_gambar($ujian['ujian_id']);
       
       $this->__update_db_soal($lembar_soal, $ujian);
       log_message('custom', 'Soal berhasil disimpan, ip : ' . $this->ip);
@@ -295,29 +295,6 @@ class Word extends CI_Controller {
     $sql2 .= implode(',', $baris2);
     $this->db->query($sql);
     $this->db->query($sql2);
-  }
-  
-  private function __bersihkan_gambar($ujian_id){
-    
-    $sql = "SELECT konten FROM ujian WHERE ujian_id = '$ujian_id'";
-    $r = $this->db->query($sql)->row();
-    if($r->konten !== null){
-      
-      $dom = new DOMDocument();
-      $dom->loadHTML($r->konten);
-      $tag_gambar = $dom->getElementsByTagName("img");
-      
-      foreach($tag_gambar as $img){
-        $gbr = FCPATH . $img->getAttribute('src');
-        // log_message('custom', 'menghapus : ' . $gbr);
-        if(file_exists($gbr)){
-          unlink($gbr);
-          log_message('custom', 'menghapus :' . $gbr);
-        }else{
-          log_message('custom', $gbr . ' tidak ada');
-        }
-      }
-    }
   }
 
   private function __tambah_tmp_gbr($nama_file){

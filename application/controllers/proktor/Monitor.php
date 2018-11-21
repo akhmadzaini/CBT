@@ -19,7 +19,7 @@ class Monitor extends Home_proktor{
 		}elseif($jenis == 'progres'){
 			$this->db->where("mulai <= now() AND selesai >= now()");
 		}
-		$this->db->join('peserta', 'ujian.ujian_id = peserta.ujian_id');
+		$this->db->join('peserta', 'ujian.ujian_id = peserta.ujian_id', 'left');
 		$this->db->group_by('ujian.ujian_id');
 		$this->db->select('ujian.ujian_id, judul');
 		$this->db->select('COUNT(peserta.login) AS jml_peserta');
@@ -105,6 +105,32 @@ class Monitor extends Home_proktor{
     $this->db->set('server', $post['server']);
     $this->db->insert('peserta');
     redirect('d=proktor&c=monitor&m=peserta&ujian_id=' . $post['ujian_id']);
+  }
+
+  function hapus_ujian(){
+    $ujian_id = $this->input->get('ujian_id');
+    
+    if(!empty($ujian_id)){
+      // 1. bersihkan gambar
+      bersihkan_gambar($ujian_id);
+
+      // 2. hapus data peserta jawaban
+      $this->db->query("DELETE FROM peserta_jawaban WHERE ujian_id = '$ujian_id'");
+      
+      // 3. hapus data peserta
+      $this->db->query("DELETE FROM peserta WHERE ujian_id = '$ujian_id'");
+
+      // 4. hapus data pilihan_jawaban
+      $this->db->query("DELETE FROM pilihan_jawaban WHERE ujian_id = '$ujian_id'");
+     
+      // 5. hapus data soal
+      $this->db->query("DELETE FROM soal WHERE ujian_id = '$ujian_id'");
+     
+      // 6. hapus data ujian
+      $this->db->query("DELETE FROM ujian WHERE ujian_id = '$ujian_id'");
+    }
+
+    redirect("?d=proktor&c=monitor&m=ujian");
   }
 
 	private function get_jawaban_peserta(){
