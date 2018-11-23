@@ -30,12 +30,18 @@
               <tr>
                 <td>
                   <div v-if="(soalJson[idxSoal].essay != 1)" class="options-group">
-                    <div class="options" v-for="pilihan, idx in soalJson[idxSoal].pilihan_jawaban" :data-pilihan_ke="pilihan.pilihan_ke">
-                      <span :class="(pilihan.pilihan_ke == soalJson[idxSoal].pilihan) ? 'option checked' : 'option'" >
-                        <span class="inneroption"> {{String.fromCharCode(65 + idx)}} </span>
-                      </span>
-                      <p><span v-html="pilihan.konten"></span></p>
-                    </div>                            
+                    <table width="100%">
+                      <tr v-for="pilihan, idx in soalJson[idxSoal].pilihan_jawaban">
+                        <td>
+                          <div class="options" :data-pilihan_ke="pilihan.pilihan_ke">
+                            <span :class="(pilihan.pilihan_ke == soalJson[idxSoal].pilihan) ? 'option checked' : 'option'" >
+                              <span class="inneroption"> {{String.fromCharCode(65 + idx)}} </span>
+                            </span>
+                            <p><span v-html="pilihan.konten"></span></p>
+                          </div>                            
+                        </td>
+                      </tr>
+                    </table>
                   </div>
                 </td>
               </tr>
