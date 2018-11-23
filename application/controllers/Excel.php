@@ -25,10 +25,10 @@ class Excel extends CI_Controller {
 		$this->db->query($sql);
 
 		// Masukkan data peserta
-		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server) VALUES ";
+		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
 		foreach($peserta as $p){
 			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]')";
+			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
 		}
 		$sql .= implode(',', $rows);
 		$this->db->query($sql);
@@ -57,11 +57,11 @@ class Excel extends CI_Controller {
 		}
 
 		// Periksa apakah soal ujian sudah terkunci
-		$this->db->where("ujian_id='$ujian_id' AND status_soal=2");
-		if($this->db->count_all_results('ujian') > 0){
-			json_output(200, array('pesan' => 'terkunci'));
-			die();
-		}
+		// $this->db->where("ujian_id='$ujian_id' AND status_soal=2");
+		// if($this->db->count_all_results('ujian') > 0){
+		// 	json_output(200, array('pesan' => 'terkunci'));
+		// 	die();
+		// }
 
 		// Sunting data ujian
 		$sql = "UPDATE ujian 
@@ -78,10 +78,10 @@ class Excel extends CI_Controller {
 		$this->db->query("DELETE FROM peserta WHERE ujian_id='$ujian_id'");
 
 		// Masukkan data peserta
-		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server) VALUES ";
+		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
 		foreach($peserta as $p){
 			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]')";
+			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
 		}
 		$sql .= implode(',', $rows);
 		$this->db->query($sql);
@@ -106,11 +106,20 @@ class Excel extends CI_Controller {
 		if($this->db->count_all_results('ujian') == 0){
 			json_output(200, array('pesan' => 'ujian_tak_tersedia'));
 			die();
-		}
+    }
+    
+    // ambil data kunci jawaban
+    $sql = "SELECT no_soal, jawaban
+          FROM soal
+          WHERE essay = 0
+          ORDER BY no_soal";
+    $kunci_jawaban = $this->db->query($sql)->result();
+    $jml_soal = count($kunci_jawaban);
 
 		// Generate query kolom untuk no soal
 		$sql_add = array();
-		foreach(range(1, 100) as $no){
+		foreach($kunci_jawaban as $r){
+      $no = $r->no_soal;
 			$sql_add[] = "(SELECT pilihan FROM  peserta_jawaban 
 						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS no_$no";
 		}
@@ -120,8 +129,13 @@ class Excel extends CI_Controller {
 				(SELECT SUM(pilihan_skor) FROM peserta_jawaban WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login) AS nilai,
 				$sql_add
 				FROM peserta a
-				WHERE a.ujian_id = '$post[ujian_id]'";
-		$data = array('pesan' => 'ok' , 'data' => $this->db->query($sql)->result_array());
+        WHERE a.ujian_id = '$post[ujian_id]'";
+        
+		$data = array(
+      'pesan' => 'ok' , 
+      'data' => $this->db->query($sql)->result_array(), 
+      'kunci_jawaban' => $kunci_jawaban
+    );
 		json_output(200, $data);
 	}
 
