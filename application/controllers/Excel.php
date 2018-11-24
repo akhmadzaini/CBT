@@ -130,7 +130,8 @@ class Excel extends CI_Controller {
 				(SELECT SUM(pilihan_skor) FROM peserta_jawaban WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login) AS nilai,
 				$sql_add
 				FROM peserta a
-        WHERE a.ujian_id = '$post[ujian_id]'";
+        WHERE a.ujian_id = '$post[ujian_id]'
+        ORDER BY a.server, a.kelas, a.nama";
         
 		$data = array(
       'pesan' => 'ok' , 
