@@ -286,7 +286,7 @@ class Word extends CI_Controller {
     $baris2 = array();
     foreach($arr_soal as $no_soal => $butir){
       $soal = $butir['soal'];
-      $baris[] = "('$ujian_id', $no_soal, '$soal[essay]', '". $this->db->escape_str($soal['konten']) ."', '$soal[jawaban]', $soal[skor])";
+      $baris[] = "('$ujian_id', $no_soal, '$soal[essay]', '". $this->db->escape_str($soal['konten']) ."', TRIM('$soal[jawaban]'), $soal[skor])";
       foreach($butir['pilihan'] as $pilihan_ke => $konten){
         $baris2[] = "('$ujian_id', $no_soal, '$pilihan_ke', '". $this->db->escape_str($konten) ."')";
       }

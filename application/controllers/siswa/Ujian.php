@@ -169,12 +169,13 @@ class Ujian extends Home_siswa{
 	private function __get_skor($ujian_id, $no_soal, $pilihan){
 		$this->db->where('ujian_id', $ujian_id);
 		$this->db->where('no_soal', $no_soal);
-		$this->db->where('jawaban', $pilihan);
+		$this->db->where('jawaban', strtoupper($pilihan));
+		// $this->db->select('jawaban');
 		$this->db->select('skor');
 		$q = $this->db->get('soal');
 		if($q->num_rows() > 0){
 			return $q->row()->skor;
-		}else{
+		}else{      
 			return 0;
 		}
   }
