@@ -112,6 +112,7 @@ class Excel extends CI_Controller {
     $sql = "SELECT no_soal, jawaban
           FROM soal
           WHERE essay = 0
+          AND ujian_id = '$post[ujian_id]'
           ORDER BY no_soal";
     $kunci_jawaban = $this->db->query($sql)->result();
     $jml_soal = count($kunci_jawaban);
