@@ -267,7 +267,7 @@ class Word extends CI_Controller {
     
     // Update data ujian
     $sql = "UPDATE ujian 
-    SET judul = '$ujian[judul]', konten = '$lembar_soal', status_soal = 1, tgl_unggah = NOW()
+    SET judul = '$ujian[judul]', konten = '". $this->db->escape_str($lembar_soal) ."', status_soal = 1, tgl_unggah = NOW()
     WHERE ujian_id = '$ujian_id' ";
     $this->db->query($sql);
     
@@ -286,9 +286,9 @@ class Word extends CI_Controller {
     $baris2 = array();
     foreach($arr_soal as $no_soal => $butir){
       $soal = $butir['soal'];
-      $baris[] = "('$ujian_id', $no_soal, '$soal[essay]', '$soal[konten]', '$soal[jawaban]', $soal[skor])";
+      $baris[] = "('$ujian_id', $no_soal, '$soal[essay]', '". $this->db->escape_str($soal['konten']) ."', '$soal[jawaban]', $soal[skor])";
       foreach($butir['pilihan'] as $pilihan_ke => $konten){
-        $baris2[] = "('$ujian_id', $no_soal, '$pilihan_ke', '$konten')";
+        $baris2[] = "('$ujian_id', $no_soal, '$pilihan_ke', '". $this->db->escape_str($konten) ."')";
       }
     }
     $sql .= implode(',', $baris);
