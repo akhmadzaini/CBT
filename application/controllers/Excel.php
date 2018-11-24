@@ -81,7 +81,7 @@ class Excel extends CI_Controller {
 		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
 		foreach($peserta as $p){
 			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
+			$rows[] = "('$ujian_id', '$p[nis]', '". strtoupper($p['login']) ."', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
 		}
 		$sql .= implode(',', $rows);
 		$this->db->query($sql);
