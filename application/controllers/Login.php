@@ -51,7 +51,7 @@ class Login extends CI_Controller{
 		$sql = "SELECT * FROM peserta 
 				WHERE ujian_id = '$post[ujian_id]'
 				AND status = '0' 
-				AND login = '$post[login]'
+				AND UPPER(login) = '" . strtoupper($post['login']) . "'
 				AND password = '$post[password]'";
 		$q = $this->db->query($sql);
 		if($q->num_rows() > 0){
