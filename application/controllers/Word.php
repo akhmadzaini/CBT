@@ -213,7 +213,7 @@ class Word extends CI_Controller {
         // Jika baris merupakan baris soal
         $soal = array(	
           'konten' 	=> get_inner_html($kolom->item(1)), 
-          'jawaban' => strtoupper($kolom->item(2)->nodeValue),
+          'jawaban' => trim(strtoupper($kolom->item(2)->nodeValue)),
           'skor' 		=> (float)$kolom->item(3)->nodeValue,
           'essay'		=> 0
         );
