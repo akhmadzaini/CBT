@@ -32,17 +32,18 @@
             <tbody>
               <?php $n = 1?>
               <?php foreach($ujian as $r):?>
-                <tr>
-                  <td><?=$n++?></td>
-                  <td><?=$r->judul?></td>
-                  <td><?=$r->mulai?></td>
-                  <td><?=$r->selesai?></td>
-                  <td>
-                    <a href="<?=site_url('?d=proktor&c=cetak&m=kartu_peserta&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Kartu peserta ujian">class</i></a>
-                    <a href="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>
-                    <a href="<?=site_url('?d=proktor&c=cetak&m=berita_acara&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Berita acara">gavel</i></a>
-                  </td>
-                </tr>                
+              <tr>
+                <td><?=$n++?></td>
+                <td><?=$r->judul?></td>
+                <td><?=$r->mulai?></td>
+                <td><?=$r->selesai?></td>
+                <td>
+                  <a class="btn-cetak" data-judul="Cetak jawaban essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Jawaban Essay">message</i></a>
+                  <a href="<?=site_url('?d=proktor&c=cetak&m=kartu_peserta&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Kartu peserta ujian">class</i></a>
+                  <a href="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>
+                  <a href="<?=site_url('?d=proktor&c=cetak&m=berita_acara&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Berita acara">gavel</i></a>
+                </td>
+              </tr>                
               <?php endforeach?>
             </tbody>
           </table>
@@ -53,12 +54,69 @@
   </div>
 </section>
 
-  
+<div class="modal fade" id="modal-group-cetak" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="defaultModalLabel">Pilihan pengelompokan <span class="modal-data-judul"></span></h4>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Server</th>
+              <th>Kelas</th>
+              <th>Cetak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php $n=1?>
+            <?php foreach($kelompok as $r):?>
+            <tr>
+              <td><?=$n++?></td>
+              <td><?=$r->server?></td>
+              <td><?=$r->kelas?></td>
+              <td>
+                <a href="javascript:void(0)" class="btn-cetak-detail" data-server="<?=$r->server?>" data-kelas="<?=$r->kelas?>" data-url="">
+                  <i class="material-icons">print</i>
+                </a>
+              </td>
+            </tr>
+            <?php endforeach?>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">SELESAI</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <?php $this->load->view('proktor/footer')?>
 <script>
   $(function(){
     $('[data-toggle="tooltip"]').tooltip({
-        container: 'body'
+      container: 'body'
+    });
+
+    // klik tombol cetak
+    $(document).on('click', '.btn-cetak', function() {
+      $('.modal-data-judul').text($(this).data('judul'));
+      $('.btn-cetak-detail').attr('data-url', $(this).data('url'));
+      $('#modal-group-cetak').modal('show');
+    });
+
+    // klik detail cetak
+    $(document).on('click', '.btn-cetak-detail', function() {
+      const add_data = "&server=" + $(this).data('server') + "&kelas=" + $(this).data('kelas');
+      const url = $(this).data('url') + add_data;
+      window.open(
+        url,
+        '_blank' // <- This is what makes it open in a new window.
+      );
     });
   });
 </script>
