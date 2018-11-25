@@ -115,8 +115,13 @@ class Cetak extends Home_proktor{
   
   function presensi(){
     $ujian_id = $_GET['ujian_id'];
-    $sql = "SELECT nis, nama FROM peserta WHERE ujian_id = '$ujian_id'
-    ORDER BY nis ";
+    $server = $_GET['server'];
+    $kelas = $_GET['kelas'];
+    $sql = "SELECT nis, nama FROM peserta 
+    WHERE ujian_id = '$ujian_id'
+    AND server = '$server'
+    AND kelas = '$kelas'
+    ORDER BY server, kelas, nama";
     $data = $this->db->query($sql)->result();
     
     $siswa = array();
@@ -326,18 +331,24 @@ class Cetak extends Home_proktor{
     }
     
     $pdf = new PDFKU();
+    $pdf->AddPage();
     $pdf->AliasNbPages();
     
     // Atur judul 
-    $pdf->SetFont('Arial','B',14);
-    $pdf->AddPage();
-    $pdf->Cell(0, 10, 'JAWABAN ESSAY UJIAN ', '', 1, 'C');
+    $pdf->SetFont('Arial','B',13);
+    $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),17,13,15,0,'PNG');
+    
+    $pdf->Cell(10 ,7,'',0,0);$pdf->Cell(0 ,7,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO',0, 1,'C');
+    $pdf->Cell(10 ,7,'',0,0);$pdf->Cell(0 ,7,get_app_config('NAMA_SEKOLAH'),0, 1,'C');
+    $pdf->Cell(10 ,7,'',0,0);$pdf->Cell(0 ,7,'LEMBAR JAWABAN ESSAY', 'B', 1, 'C');
     $pdf->Ln(5);
-    $pdf->Cell(0, 10, 'ID UJIAN : ' . $post['ujian_id'], '', 1);
-    $pdf->Cell(0, 10, 'NAMA UJIAN :  ' . $nama_ujian , '', 1);
+    $pdf->SetFont('Arial','',10);
+    $pdf->Cell(10, 7, 'ID UJIAN : ' . $post['ujian_id'], '', 1);
+    $pdf->Cell(10, 7, 'NAMA UJIAN :  ' . $nama_ujian , '', 1);
+    $pdf->Cell(10, 7, 'SERVER :  ' . $post['server'] , '', 1);
+    $pdf->Cell(10, 7, 'KELAS :  ' . $post['kelas'] , '', 1);
     $pdf->Ln(5);
     
-    $pdf->SetFont('Arial','',10);
     foreach($peserta as $r){
       // Cetak nis dan nama
       $pdf->Cell(40, 7, $r['nis'], 'B');

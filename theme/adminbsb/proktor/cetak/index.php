@@ -38,9 +38,9 @@
                 <td><?=$r->mulai?></td>
                 <td><?=$r->selesai?></td>
                 <td>
-                  <a class="btn-cetak" data-judul="Cetak jawaban essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Jawaban Essay">message</i></a>
+                  <a class="btn-cetak" data-judul="Cetak jawaban essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" ><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Jawaban Essay">message</i></a>
                   <a href="<?=site_url('?d=proktor&c=cetak&m=kartu_peserta&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Kartu peserta ujian">class</i></a>
-                  <a href="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>
+                  <a class="btn-cetak" data-judul="Cetak presensi" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>
                   <a href="<?=site_url('?d=proktor&c=cetak&m=berita_acara&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Berita acara">gavel</i></a>
                 </td>
               </tr>                
@@ -105,17 +105,17 @@
     // klik tombol cetak
     $(document).on('click', '.btn-cetak', function() {
       $('.modal-data-judul').text($(this).data('judul'));
-      $('.btn-cetak-detail').attr('data-url', $(this).data('url'));
+      $('.btn-cetak-detail').data('url', $(this).data('url'));
       $('#modal-group-cetak').modal('show');
     });
 
     // klik detail cetak
     $(document).on('click', '.btn-cetak-detail', function() {
-      const add_data = "&server=" + $(this).data('server') + "&kelas=" + $(this).data('kelas');
-      const url = $(this).data('url') + add_data;
+      var add_data = "&server=" + $(this).data('server') + "&kelas=" + $(this).data('kelas');
+      var url = $(this).data('url') + add_data;
       window.open(
         url,
-        '_blank' // <- This is what makes it open in a new window.
+        '_blank' 
       );
     });
   });
