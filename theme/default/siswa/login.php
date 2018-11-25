@@ -51,14 +51,14 @@
             <div class="col-md-12">
                 <div id="loginbox">
                     <div id="logintitle">
-                        <p>User Login</p>
+                        <p class="text-center">User Login</p>
                     </div>
                     <div id="loginbody">
                         <div style="height :43px"></div>
                         <form method="POST" id="form_login" action="<?=site_url('?c=login&m=submit_login_siswa')?>">
                             <table>
                                 <tbody><tr>
-                                    <td>User name</td>
+                                    <td>User</td>
                                     <td><span class="glyphicon glyphicon-user" aria-hidden="true"></span><input type="text" name="login" id="login" required=""></td>
                                     <td></td>
                                 </tr>
@@ -68,7 +68,7 @@
                                     <td><span class="glyphicon glyphicon-eye-open showPassword" aria-hidden="true" id="eye"></span></td>
                                 </tr>
                                 <tr>
-                                    <td>Kode Ujian</td>
+                                    <td>Ujian</td>
                                     <td>
                                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><select name="ujian_id" required="">
                                             <option value="">-- Pilih Ujian --</option>

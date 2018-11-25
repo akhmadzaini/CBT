@@ -34,6 +34,10 @@ body {
 	font-family : "Droid Sans", sans-serif;
 }
 
+h3{
+  font-size: 300%;
+}
+
 .b,.bold {font-weight : bold;}
 .clear {clear : both;}
 p {text-align : justify}
