@@ -26,6 +26,10 @@ class Cetak extends Home_proktor{
     $sql = "SELECT DISTINCT server,kelas FROM peserta 
     ORDER BY server, kelas";
     $data['kelompok'] = $this->db->query($sql)->result();
+
+    $sql = "SELECT DISTINCT server,sesi FROM peserta 
+    ORDER BY server, sesi";
+    $data['kelompok2'] = $this->db->query($sql)->result();
     
     $this->load->view('proktor/cetak/index', $data);
   }
@@ -116,11 +120,11 @@ class Cetak extends Home_proktor{
   function presensi(){
     $ujian_id = $_GET['ujian_id'];
     $server = $_GET['server'];
-    $kelas = $_GET['kelas'];
+    $sesi = $_GET['sesi'];
     $sql = "SELECT nis, nama FROM peserta 
     WHERE ujian_id = '$ujian_id'
     AND server = '$server'
-    AND kelas = '$kelas'
+    AND sesi = '$sesi'
     ORDER BY server, kelas, nama";
     $data = $this->db->query($sql)->result();
     
@@ -143,7 +147,7 @@ class Cetak extends Home_proktor{
       $pdf->Cell(189 ,4,'',0,1);//end of line
       
       $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO',0,1,'C');
-      $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DAFTAR HADIR UJIAN_____CBT',0,1,'C');
+      $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DAFTAR HADIR UJIAN________________________________CBT',0,1,'C');
       $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'TAHUN PELAJARAN 2018/2019',0,1,'C');
       $pdf->Cell(40 ,6,'______________________________________________________________________________',0,1);
       $pdf->Cell(189 ,4,'',0,1);//end of line
@@ -232,7 +236,7 @@ class Cetak extends Home_proktor{
     $pdf->SetFont('Arial','',12);
     
     $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DINAS PENDIDIKAN PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO',0,1,'C');
-    $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'BERITA ACARA PELAKSANAAN UJIAN_____CBT',0,1,'C');
+    $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'DAFTAR HADIR UJIAN________________________________CBT',0,1,'C');
     $pdf->Cell(10 ,6,'',0,0);$pdf->Cell(189 ,7,'TAHUN PELAJARAN 2018/2019',0,1,'C');
     $pdf->Cell(40 ,6,'______________________________________________________________________________',0,1);
     $pdf->Cell(189 ,4,'',0,1);//end of line
@@ -248,7 +252,7 @@ class Cetak extends Home_proktor{
     $pdf->Cell(40 ,6,'PROBOLINGGO',0,1);
     $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Sekolah/Madrasah',0,0);
     $pdf->Cell(3 ,6,':',0,0);
-    $pdf->Cell(40 ,6,'__________________________',0,1);
+    $pdf->Cell(40 ,6,get_app_config('NAMA_SEKOLAH'),0,1);
     $pdf->Cell(14 ,4,'',0,0);$pdf->Cell(50 ,6,'Tempat Ujian',0,0);
     $pdf->Cell(3 ,6,':',0,0);
     $pdf->Cell(40 ,6,'__________________________',0,1);
@@ -315,7 +319,7 @@ class Cetak extends Home_proktor{
     $nama_ujian = $r->judul;
     
     // ambil data essay
-    $sql = "SELECT nis, login, nama FROM peserta WHERE ujian_id = '$post[ujian_id]'";
+    $sql = "SELECT nis, login, nama FROM peserta WHERE ujian_id = '$post[ujian_id]' ORDER BY nama";
     $peserta = $this->db->query($sql)->result_array();
     foreach($peserta as $k => $r){
       $sql = "SELECT a.no_soal, b.essay

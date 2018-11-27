@@ -38,9 +38,9 @@
                 <td><?=$r->mulai?></td>
                 <td><?=$r->selesai?></td>
                 <td>
-                  <a class="btn-cetak" data-judul="Cetak jawaban essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" ><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Jawaban Essay">message</i></a>
+                  <a class="btn-cetak" data-judul="Cetak jawaban essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" data-kelompok="kelompok1"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Jawaban Essay">message</i></a>
                   <a href="<?=site_url('?d=proktor&c=cetak&m=kartu_peserta&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Kartu peserta ujian">class</i></a>
-                  <a class="btn-cetak" data-judul="Cetak presensi" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>
+                  <a class="btn-cetak" data-judul="Cetak presensi" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" data-kelompok="kelompok2"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>
                   <a href="<?=site_url('?d=proktor&c=cetak&m=berita_acara&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Berita acara">gavel</i></a>
                 </td>
               </tr>                
@@ -62,7 +62,7 @@
       </div>
       <div class="modal-body">
         <table class="table">
-          <thead>
+          <thead class="kelompok kelompok1">
             <tr>
               <th>#</th>
               <th>Server</th>
@@ -70,7 +70,15 @@
               <th>Cetak</th>
             </tr>
           </thead>
-          <tbody>
+          <thead class="kelompok kelompok2">
+            <tr>
+              <th>#</th>
+              <th>Server</th>
+              <th>Sesi</th>
+              <th>Cetak</th>
+            </tr>
+          </thead>
+          <tbody class="kelompok kelompok1">
             <?php $n=1?>
             <?php foreach($kelompok as $r):?>
             <tr>
@@ -78,7 +86,22 @@
               <td><?=$r->server?></td>
               <td><?=$r->kelas?></td>
               <td>
-                <a href="javascript:void(0)" class="btn-cetak-detail" data-server="<?=$r->server?>" data-kelas="<?=$r->kelas?>" data-url="">
+                <a href="javascript:void(0)" class="btn-cetak-detail" data-url="" data-server="<?=$r->server?>" data-kelas="<?=$r->kelas?>">
+                  <i class="material-icons">print</i>
+                </a>
+              </td>
+            </tr>
+            <?php endforeach?>
+          </tbody>
+          <tbody class="kelompok kelompok2">
+            <?php $n=1?>
+            <?php foreach($kelompok2 as $r):?>
+            <tr>
+              <td><?=$n++?></td>
+              <td><?=$r->server?></td>
+              <td><?=$r->sesi?></td>
+              <td>
+                <a href="javascript:void(0)" class="btn-cetak-detail" data-url="" data-server="<?=$r->server?>" data-sesi="<?=$r->sesi?>" >
                   <i class="material-icons">print</i>
                 </a>
               </td>
@@ -104,15 +127,25 @@
 
     // klik tombol cetak
     $(document).on('click', '.btn-cetak', function() {
+      var kelompok = $(this).data('kelompok');
       $('.modal-data-judul').text($(this).data('judul'));
       $('.btn-cetak-detail').data('url', $(this).data('url'));
+      $('.kelompok').hide();
+      $('.' + $(this).data('kelompok')).show();
       $('#modal-group-cetak').modal('show');
     });
 
     // klik detail cetak
     $(document).on('click', '.btn-cetak-detail', function() {
-      var add_data = "&server=" + $(this).data('server') + "&kelas=" + $(this).data('kelas');
-      var url = $(this).data('url') + add_data;
+      var url = '';
+      $.each( $(this).data(), function( key, value ) {
+        if(key == 'url'){
+          url = url + value;
+        }
+        else{
+          url = url + '&' + key + '=' + value;
+        }
+      });
       window.open(
         url,
         '_blank' 
