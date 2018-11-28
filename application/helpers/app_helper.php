@@ -211,19 +211,20 @@ function rcopy($src, $dst) {
 }
 
 function data_do_pemulihan_data($data){
+    ini_set('max_execution_time', 0);
     $CI =& get_instance();
     foreach($data as $nama_tabel => $tabel){
-        $add_sql = array();
         foreach($tabel as $row){
             $d = array();
             foreach($row as $kolom){
                 $d[] = $CI->db->escape($kolom);
             }
-            $add_sql[] = '(' . implode(',', $d) . ')';
-        }
-        $add_sql = implode(',', $add_sql);
-        if(!empty($add_sql)){
-            $sql = "INSERT INTO $nama_tabel VALUES $add_sql";
+            $data = '(' . implode(',', $d) . ')';
+            $sql = "INSERT INTO $nama_tabel VALUES $data";
+            if ($CI->db->conn_id->ping() === FALSE){
+                sleep(1);
+                $CI->db->reconnect();
+            }
             $CI->db->query($sql);
         }
     }

@@ -55,6 +55,8 @@ class Sinkron extends Home_proktor{
   }
   
   function do_restore(){
+    ini_set('max_execution_time', 0);
+    
     // 1. Reset data
     data_do_reset();
     
