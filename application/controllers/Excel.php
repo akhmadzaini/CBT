@@ -16,21 +16,11 @@ class Excel extends CI_Controller {
 		$post = $this->input->post();
     // $selesai = interval_tgl($post['mulai'], $post['alokasi']);
     $selesai = jam_akhir($post['mulai']);
-		$peserta = json_decode($post['peserta'], TRUE);
 		$ujian_id = string_acak(10);
 
 		// Masukkan data ujian
 		$sql = "INSERT INTO ujian (ujian_id, mulai, selesai, alokasi, jml_soal, acak)
 				VALUES ('$ujian_id', '$post[mulai]', '$selesai', $post[alokasi], $post[jml_soal], $post[acak])";
-		$this->db->query($sql);
-
-		// Masukkan data peserta
-		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
-		foreach($peserta as $p){
-			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
-		}
-		$sql .= implode(',', $rows);
 		$this->db->query($sql);
 
 		// Atur nilai kembalian pada console json
@@ -42,11 +32,11 @@ class Excel extends CI_Controller {
 	}
 
 	function sunting_ujian(){
+    ini_set('max_execution_time', 0);
 		$post = $this->input->post();
     // $selesai = interval_tgl($post['mulai'], $post['alokasi']);
     $selesai = jam_akhir($post['mulai']);
     log_message('custom', "mulai : $post[mulai], selesai : $selesai");
-		$peserta = json_decode($post['peserta'], TRUE);
 		$ujian_id = $post['ujian_id'];
 
 		// Periksa apakah id ujian telah tersedia
@@ -77,15 +67,6 @@ class Excel extends CI_Controller {
 		// Reset data peserta ujian
 		$this->db->query("DELETE FROM peserta WHERE ujian_id='$ujian_id'");
 
-		// Masukkan data peserta
-		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
-		foreach($peserta as $p){
-			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '". strtoupper($p['login']) ."', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
-		}
-		$sql .= implode(',', $rows);
-		$this->db->query($sql);
-
 		// Atur nilai kembalian pada console json
 		$hasil = array(
 			'pesan' => 'ok',
@@ -93,7 +74,29 @@ class Excel extends CI_Controller {
 			'status_soal' => $status_soal,
 		);
 		json_output(200, $hasil);
-	}
+  }
+  
+  function masukkan_peserta(){
+    $post = $this->input->post();
+    
+    // ekstrak data
+    $ujian_id = $this->db->escape($post['ujian_id']);
+    $nis = $this->db->escape($post['nis']);
+    $login = $this->db->escape(strtoupper($post['login_peserta']));
+    $password = $this->db->escape(strtoupper($post['password']));
+    $nama = $this->db->escape(strtoupper($post['nama']));
+    $server = $this->db->escape(strtoupper($post['server']));
+    $sesi = $this->db->escape(strtoupper($post['sesi']));
+    $kelas = $this->db->escape(strtoupper($post['kelas']));
+
+    // eksekusi query
+    $sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES 
+            ($ujian_id, $nis, $login, $nama, $password, $server, $sesi, $kelas)";
+    $this->db->query($sql);
+
+    // hasil
+    json_output(200, ['pesan' => 'ok']);
+  }
 
 	function tarik_nilai(){
 		$post = $this->input->post();
@@ -124,10 +127,10 @@ class Excel extends CI_Controller {
 			$sql_add[] = "(SELECT pilihan FROM  peserta_jawaban 
 						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS no_$no";
 		}
-		$sql_add = implode(',', $sql_add);
-		
+    $sql_add = count($sql_add) > 0 ? ',' . implode(',', $sql_add) : '';
+    
 		$sql = "SELECT a.nis, a.nama, a.status, a.last_login,
-				(SELECT SUM(pilihan_skor) FROM peserta_jawaban WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login) AS nilai,
+				(SELECT SUM(pilihan_skor) FROM peserta_jawaban WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login) AS nilai
 				$sql_add
 				FROM peserta a
         WHERE a.ujian_id = '$post[ujian_id]'
