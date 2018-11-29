@@ -36,15 +36,14 @@ class Cetak extends Home_proktor{
   
   function kartu_peserta(){
     $ujian_id = $_GET['ujian_id'];
-    $sql = "SELECT nis, login, password, server, nama FROM peserta WHERE ujian_id = '$ujian_id'
-    ORDER BY nis ";
+    $sql = "SELECT nis, login, password, server, sesi, nama FROM peserta WHERE ujian_id = '$ujian_id'";
     $data = $this->db->query($sql)->result();
     
     
     $siswa = array();
     $no = 1;
     foreach($data as $k => $r){
-      $siswa[]=array($r->login,$r->password,$r->server,$r->nis,substr($r->nama, 0, 25));
+      $siswa[]=array($r->login,$r->password,$r->sesi,$r->server,$r->nis,substr($r->nama, 0, 25));
     }
     //$siswa[$r][5]
     
@@ -83,28 +82,32 @@ class Cetak extends Home_proktor{
         $pdf->Cell(90 ,3,'_____________________________________________',0,0,'C');
         $pdf->Cell(8 ,3,'',0,0,'C');
         $pdf->Cell(90 ,3,'_____________________________________________',0,1,'C');
-        $pdf->Cell(189 ,4,'',0,1);//end of line
+        $pdf->Cell(189 ,6,'',0,1);//end of line
         $pdf->SetFont('Arial','',8);
-        $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'User',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][0],0,0);
-        $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'User',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][0],0,1);
-        $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'Pass',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][1],0,0);
-        $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'Pass',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][1],0,1);
-        $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'Server',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][2],0,0);
-        $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'Server',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][2],0,1);
-        $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'NISN',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][3],0,0);
-        $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'NISN',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][3],0,1);
-        $pdf->Cell(30 ,5,'',0,0);$pdf->Cell(10 ,5,'Nama',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][4],0,0);
-        $pdf->Cell(55 ,5,'',0,0);$pdf->Cell(10 ,5,'Nama',0,0);$pdf->Cell(3 ,5,':',0,0);
-        $pdf->Cell(30 ,5,$siswa[$nourut][4],0,1);
+        $pdf->Cell(30 ,4,'',0,0);$pdf->Cell(10 ,4,'User',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][0],0,0);
+        $pdf->Cell(55 ,4,'',0,0);$pdf->Cell(10 ,4,'User',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][0],0,1);
+        $pdf->Cell(30 ,4,'',0,0);$pdf->Cell(10 ,4,'Pass',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][1],0,0);
+        $pdf->Cell(55 ,4,'',0,0);$pdf->Cell(10 ,4,'Pass',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][1],0,1);
+        $pdf->Cell(30 ,4,'',0,0);$pdf->Cell(10 ,4,'Sesi',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][2],0,0);
+        $pdf->Cell(55 ,4,'',0,0);$pdf->Cell(10 ,4,'Sesi',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][2],0,1);
+        $pdf->Cell(30 ,4,'',0,0);$pdf->Cell(10 ,4,'Server',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][3],0,0);
+        $pdf->Cell(55 ,4,'',0,0);$pdf->Cell(10 ,4,'Server',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][3],0,1);
+        $pdf->Cell(30 ,4,'',0,0);$pdf->Cell(10 ,4,'NISN',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][4],0,0);
+        $pdf->Cell(55 ,4,'',0,0);$pdf->Cell(10 ,4,'NISN',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][4],0,1);
+        $pdf->Cell(30 ,4,'',0,0);$pdf->Cell(10 ,4,'Nama',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][5],0,0);
+        $pdf->Cell(55 ,4,'',0,0);$pdf->Cell(10 ,4,'Nama',0,0);$pdf->Cell(3 ,4,':',0,0);
+        $pdf->Cell(30 ,4,$siswa[$nourut][5],0,1);
         
         $no++;
       }
