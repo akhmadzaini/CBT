@@ -64,6 +64,7 @@ class Login extends CI_Controller{
 				$this->db->set('last_login', 'NOW()', FALSE);
 				$this->db->where('login', $post['login']);
 				$this->db->where('ujian_id', $post['ujian_id']);
+				$this->db->where('last_login IS NULL');
 				$this->db->update('peserta');
 
 				// mengatur session detail login yang aktif
