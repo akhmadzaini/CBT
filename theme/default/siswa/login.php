@@ -36,6 +36,9 @@
                     <?php if($this->session->pesan == 'login_gagal'): ?>
                     <div class="alert alert-danger">Login gagal (login salah atau login sudah terpakai)</div>
                     <?php endif?>
+                    <?php if($this->session->pesan == 'login_reset'): ?>
+                    <div class="alert alert-danger">Login anda telah direset</div>
+                    <?php endif?>
                     <?php if($this->session->pesan == 'ujian_tak_tersedia'): ?>
                     <div class="alert alert-warning">Ujian tidak tersedia (Belum ada soal atau waktu sudah habis).</div>
                     <?php endif?>

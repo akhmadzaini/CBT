@@ -29,7 +29,19 @@ class Ujian extends Home_siswa{
 		// jika sudah mengerjakan soal
 		elseif($r->status == '3'){
 			$this->load->view('siswa/nilai_siswa', $data);
-		}
+    }
+    
+    // jika login ter reset
+    else{
+      // hapus session
+      $arr_sess = array('login', 'akses', 'nama', 'nis', 'ujian_id');
+      $this->session->unset_userdata($arr_sess);
+
+      // atur pesan
+      $this->session->pesan = 'login_reset';
+      $this->session->mark_as_flash('pesan');
+      redirect('?c=login');
+    }
 
 	}
 
