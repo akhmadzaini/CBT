@@ -109,7 +109,7 @@ class Excel extends CI_Controller {
     }
     
     // ambil data kunci jawaban
-    $sql = "SELECT no_soal, jawaban
+    $sql = "SELECT no_soal, jawaban, skor
           FROM soal
           WHERE essay = 0
           AND ujian_id = '$post[ujian_id]'
@@ -126,9 +126,7 @@ class Excel extends CI_Controller {
 		}
 		$sql_add = implode(',', $sql_add);
 		
-		$sql = "SELECT a.nis, a.nama, a.status, a.last_login,
-				(SELECT SUM(pilihan_skor) FROM peserta_jawaban WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login) AS nilai,
-				$sql_add
+		$sql = "SELECT a.nis, a.nama, a.status, a.last_login,	$sql_add
 				FROM peserta a
         WHERE a.ujian_id = '$post[ujian_id]'
         ORDER BY a.server, a.kelas, a.nama";
