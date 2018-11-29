@@ -18,7 +18,7 @@
 					  <div class="alert alert-warning">
 					  	Gagal mengunggah logo, pastikan logo memenuhi kriteria berikut :
 					  	<ol>
-					  		<li>Tipe berkas : jpg, png atau gif</li>
+					  		<li>Tipe berkas yang diakui : png</li>
 					  		<li>Kapasitas berkas tidak melebihi 512 KB</li>
 					  	</ol>
 					  </div>
