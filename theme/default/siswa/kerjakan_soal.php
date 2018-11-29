@@ -140,14 +140,14 @@
     // Klik Next
     $('#btn-next').on('click', function(){
       if(vueApp.idxSoal < vueApp.soalJson.length - 1){
-        vueApp.idxSoal += 1;
+        bukaSoal(vueApp.idxSoal + 1);
       }
     });
     
     // Klik Prev
     $('#btn-prev').on('click', function(){
       if(vueApp.idxSoal > 0){
-        vueApp.idxSoal += -1;
+        bukaSoal(vueApp.idxSoal - 1);
       }
     });
     
@@ -232,8 +232,7 @@
     
     // Klik tombol nomor soall pada bagian summary
     $(document).on('click', '.no', function(){
-      vueApp.idxSoal = $(this).data('idx');
-      // $('#summary-button').trigger('click');
+      bukaSoal($(this).data('idx'));
     });
     
     // Klik tombol simpan essay
@@ -314,7 +313,17 @@
       $('#soal-body').css('font-size', '20pt');
     })
     
-    hitungMundur();        
+    hitungMundur();
+
+    var bukaSoal = function(idx){
+      $.get('?c=login&m=cek_status_login_siswa', function(hasil){
+        if(hasil == '2'){
+          vueApp.idxSoal = idx;
+        }else{
+          document.location.href = "<?php site_url('?c=ujian')?>";
+        }
+      });
+    }        
     
     // console.log(vueApp.soalJson);
     

@@ -116,6 +116,19 @@ class Login extends CI_Controller{
 		redirect('?c=login');
 	}
 
+  function cek_status_login_siswa(){
+    $nis = $this->session->nis;
+    $login = $this->session->login;
+    $ujian_id = $this->session->ujian_id;
+    $sql = "SELECT status FROM peserta
+            WHERE ujian_id= '$ujian_id' AND nis = '$nis' AND login = '$login'";
+    $r = $this->db->query($sql)->row();
+    if(empty($r)){
+      echo 0;
+    }else{
+      echo $r->status;
+    }
+  }
 
 	function logout_proktor(){
 		// hapus session
