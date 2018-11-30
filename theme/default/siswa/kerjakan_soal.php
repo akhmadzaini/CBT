@@ -33,7 +33,7 @@
                     <table width="100%">
                       <tr v-for="pilihan, idx in soalJson[idxSoal].pilihan_jawaban">
                         <td>
-                          <div class="options" :data-pilihan_ke="pilihan.pilihan_ke">
+                          <div class="options" @click="jawabPilihanGanda(pilihan.pilihan_ke)">
                             <span :class="(pilihan.pilihan_ke == soalJson[idxSoal].pilihan) ? 'option checked' : 'option'" >
                               <span class="inneroption"> {{String.fromCharCode(65 + idx)}} </span>
                             </span>
@@ -92,7 +92,7 @@
     <div id="summary" style="display: none;">
       <div v-for="soal, idx in soalJson" :class="cssSummary(idx)" :data-idx="idx">
         <p>{{idx+1}}</p>
-        <span v-if="soal.essay != 1"><span class="inneroption">{{soal.pilihan}}</span></span>
+        <span v-if="soal.essay != 1"><span class="inneroption">{{pilihan_display(soal.pilihan, soal.pilihan_jawaban)}}</span></span>
       </div>            
     </div>
   </div>
@@ -130,10 +130,30 @@
       },
       methods: {
         updateData: function (data) {
-          // sync content to component
-          // this.content = data
           this.soalJson[this.idxSoal].jawaban_essay = data;
         },
+        pilihan_display: function(pilihan, pilihan_jawaban){
+          var hasil = '';
+          pilihan_jawaban.forEach(function(item, index){
+            if(item.pilihan_ke == pilihan){
+              hasil = String.fromCharCode(65 + index);
+            }
+          });
+          return hasil;
+        },
+        jawabPilihanGanda: function (jawaban) {
+          var data = {
+            no_soal : vueApp.soalJson[vueApp.idxSoal].no_soal,
+            pilihan : jawaban
+          }
+          $('#soal').waitMe();
+          $.post("<?=site_url('?d=siswa&c=ujian&m=submit_jawaban')?>", data, function(hasil){
+            if(hasil == 'ok'){
+              $("#soal").waitMe('hide');
+              this.soalJson[this.idxSoal].pilihan = jawaban;
+            }
+          }.bind(this));
+        }
       }
     });
     
@@ -182,23 +202,12 @@
         location.href = "<?=site_url('?c=login&m=logout_siswa')?>";
       }
     });
-    
-    // Klik pilihan jawaban
-    $(document).on('click', '.options', function(){
-      $('.options .option').removeClass('checked');
-      $(this).find('.option').addClass('checked');
-      $('#soal').waitMe();
-      var data = {
-        no_soal : vueApp.soalJson[vueApp.idxSoal].no_soal,
-        pilihan : $(this).data('pilihan_ke')
-      }
-      $.post("<?=site_url('?d=siswa&c=ujian&m=submit_jawaban')?>", data, function(hasil){
-        if(hasil == 'ok'){
-          $("#soal").waitMe('hide');
-          vueApp.soalJson[vueApp.idxSoal].pilihan = data.pilihan;
-        }
-      });
-    })
+
+    // $(document).on('click', '.options', function(){
+    //   $('.options .option').removeClass('checked');
+    //   $(this).find('.option').addClass('checked');
+    //   console.log($(this).data());
+    // });
     
     // Klik tombol ragu
     $(document).on('click', '.btn-ragu', function(){
