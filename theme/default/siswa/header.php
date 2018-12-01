@@ -27,7 +27,8 @@
                             <img src="<?=(base_url('assets/') . get_app_config('LOGO_SEKOLAH'))?>">
                         </div>
                         <div style="float: left; margin-left: 10px">
-                            <h3><?=get_app_config('NAMA_SEKOLAH')?> </h3>
+                            <p style="font-size: 125%; margin-bottom: 0; padding-top: 5px">DINAS PENDIDIKAN, PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO</p>
+                            <h3 style="margin-top: 0"><?=get_app_config('NAMA_SEKOLAH')?> </h3>
                         </div>
                     </div> <div id="welcome">
                         <!--

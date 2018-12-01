@@ -1,5 +1,5 @@
 <footer>
-<p>© Copyright 2018, Dinas Pendidikan Kota Probolinggo</p>
+<p>© Copyright 2018, DINAS PENDIDIKAN, PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO</p>
 </footer>
 <script src="<?=base_url('theme/default/js/jquery.min.js')?>"></script>
 <script src="<?=base_url('theme/default/js/bootstrap.min.js')?>"></script>
