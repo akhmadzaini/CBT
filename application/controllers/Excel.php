@@ -144,7 +144,7 @@ class Excel extends CI_Controller {
 		if(login_webservice($post['login'], $post['password'])){
 			$username = $post['username'];
 			$ujian_id = $post['ujian_id'];
-			$sql = "UPDATE peserta SET status = 0 WHERE ujian_id = '$ujian_id' AND login = '$username'";
+      $sql = "UPDATE peserta SET status = 0 WHERE ujian_id = '$ujian_id' AND login = '$username'";
 			$this->db->query($sql);
 			$hasil = array(
 				'pesan' => 'ok'
