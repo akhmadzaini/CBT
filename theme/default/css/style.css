@@ -389,3 +389,13 @@ audio {
     border: solid thin #c9c9c9;
     margin-right : 15px;
 }
+
+#nama_siswa2{
+  width: 75px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  margin: 0;
+  resize: horizontal;
+}

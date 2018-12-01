@@ -38,7 +38,6 @@
                         -->
                         <div id="selamat">
                             <p>Selamat Datang</p>
-                            <p style="display:none"><b id="nama_siswa">Akhmad Zaini</b></p>
                             <p><b id="nama_siswa2"><?=$this->session->nama?></b></p>
                             <p>(<b id="userid"><?=$this->session->login?></b>)</p>
                             <p><a href="javascript:void(0)" class="tombol_logout">Logout</a></p>
