@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `peserta_jawaban` (
   `login` varchar(50) NOT NULL,
   `no_soal` int(11) NOT NULL,
   `pilihan` char(1) DEFAULT NULL COMMENT 'Jawaban pilihan ganda',
-  `essay` text COMMENT 'Jawaban essay (pengembangan)',
+  `essay` longtext COMMENT 'Jawaban essay (pengembangan)',
   `ragu` char(1) DEFAULT '0' COMMENT '0 : tidak ragu, 1 : ragu',
   `pilihan_skor` float DEFAULT '0',
   `essay_skor` float DEFAULT NULL,
