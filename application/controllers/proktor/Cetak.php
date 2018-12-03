@@ -19,7 +19,7 @@ class PDFKU extends FPDF {
 class Cetak extends Home_proktor{
 	function index(){
     $sql = 'SELECT ujian_id, judul, status_soal, mulai, selesai, jml_soal
-    FROM ujian ORDER BY mulai DESC';
+    FROM ujian ORDER BY mulai ASC';
     $data['ujian'] = $this->db->query($sql)->result();
     
     // ambil data pengelompokan
@@ -140,7 +140,7 @@ class Cetak extends Home_proktor{
     
     require_once FCPATH . 'vendor/setasign/fpdf/fpdf.php';
     $pdf = new FPDF();
-    $lembar=intval(count($siswa) / 20);
+    $lembar=intval((count($siswa)-1) / 20);
     for($t=0;$t<=$lembar;$t++){
       $pdf->AddPage();
       $pdf->SetFont('Arial','B',13);
