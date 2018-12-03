@@ -17,6 +17,10 @@ class Alat extends Home_proktor{
 		$this->load->view('proktor/alat/reset.php');
   }
   
+  function unduh_template(){
+    $this->load->view('proktor/alat/unduh_template.php');
+  }
+  
   function optimize(){
     $this->load->view('proktor/alat/optimize.php');
   }

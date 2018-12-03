@@ -190,6 +190,9 @@ function is_active($th){
                             <li class="<?=css_class_active('restore', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=restore')?>" class=" waves-effect waves-block">Restore</a>
                             </li>
+                            <li class="<?=css_class_active('unduh_template', 'm')?>">
+                              <a href="<?=site_url('?d=proktor&c=alat&m=unduh_template')?>" class=" waves-effect waves-block">Unduh Template</a>
+                            </li>
                             <!-- <li class="<?=css_class_active('optimize', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=optimize')?>" class=" waves-effect waves-block">Optimasi Penyimpan</a>
                             </li>                        -->
