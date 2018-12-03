@@ -81,7 +81,7 @@ class Ujian extends Home_siswa{
 			$add_sql2 = "'$data[pilihan]', $pilihan_skor";
 		}else{
 			$add_sql1 = 'essay';
-			$add_sql2 = "'$data[essay]'";
+			$add_sql2 = $this->db->escape($data['essay']);
 		}
 
 		// simpan jawaban
