@@ -7,7 +7,7 @@ class Login extends CI_Controller{
 		if((empty($this->session->login)) || ($this->session->akses != 'siswa')){
 			$sql = "SELECT ujian_id, judul
 					FROM ujian
-					WHERE (NOW() <= selesai) AND (NOW() >= mulai) AND (status_soal <> 0)";
+					WHERE DATE(mulai) = CURRENT_DATE()";
 			$arr_ujian_aktif = $this->db->query($sql)->result();
 			$data = array('arr_ujian_aktif' => $arr_ujian_aktif);
 			$this->load->view('siswa/login', $data);
