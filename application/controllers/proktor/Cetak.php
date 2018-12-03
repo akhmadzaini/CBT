@@ -19,7 +19,7 @@ class PDFKU extends FPDF {
 class Cetak extends Home_proktor{
 	function index(){
     $sql = 'SELECT ujian_id, judul, status_soal, mulai, selesai, jml_soal
-    FROM ujian ORDER BY mulai ASC';
+    FROM ujian WHERE judul <> "" ORDER BY mulai ASC';
     $data['ujian'] = $this->db->query($sql)->result();
     
     // ambil data pengelompokan
