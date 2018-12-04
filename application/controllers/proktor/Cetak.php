@@ -23,12 +23,12 @@ class Cetak extends Home_proktor{
     $data['ujian'] = $this->db->query($sql)->result();
     
     // ambil data pengelompokan
-    $sql = "SELECT DISTINCT server,kelas FROM peserta 
-    ORDER BY server, kelas";
+    $sql = "SELECT DISTINCT kelas FROM peserta 
+    ORDER BY  kelas ASC";
     $data['kelompok'] = $this->db->query($sql)->result();
 
-    $sql = "SELECT DISTINCT server,sesi FROM peserta 
-    ORDER BY server, sesi";
+    $sql = "SELECT DISTINCT sesi FROM peserta 
+    ORDER BY sesi";
     $data['kelompok2'] = $this->db->query($sql)->result();
     
     $this->load->view('proktor/cetak/index', $data);
@@ -122,13 +122,11 @@ class Cetak extends Home_proktor{
   
   function presensi(){
     $ujian_id = $_GET['ujian_id'];
-    $server = $_GET['server'];
     $sesi = $_GET['sesi'];
     $sql = "SELECT nis, nama FROM peserta 
     WHERE ujian_id = '$ujian_id'
-    AND server = '$server'
     AND sesi = '$sesi'
-    ORDER BY server, kelas, nama";
+    ORDER BY  kelas, nama";
     $data = $this->db->query($sql)->result();
     
     $siswa = array();
@@ -322,7 +320,7 @@ class Cetak extends Home_proktor{
     $nama_ujian = $r->judul;
     
     // ambil data essay
-    $sql = "SELECT nis, login, nama FROM peserta WHERE ujian_id = '$post[ujian_id]' ORDER BY nama";
+    $sql = "SELECT nis, login, nama FROM peserta WHERE ujian_id = '$post[ujian_id]' AND kelas = '$post[kelas]' ORDER BY kelas,nama ASC";
     $peserta = $this->db->query($sql)->result_array();
     foreach($peserta as $k => $r){
       $sql = "SELECT a.no_soal, b.essay
@@ -352,7 +350,6 @@ class Cetak extends Home_proktor{
     $pdf->SetFont('Arial','',10);
     $pdf->Cell(10, 7, 'ID UJIAN : ' . $post['ujian_id'], '', 1);
     $pdf->Cell(10, 7, 'NAMA UJIAN :  ' . $nama_ujian , '', 1);
-    $pdf->Cell(10, 7, 'SERVER :  ' . $post['server'] , '', 1);
     $pdf->Cell(10, 7, 'KELAS :  ' . $post['kelas'] , '', 1);
     $pdf->Ln(5);
     
