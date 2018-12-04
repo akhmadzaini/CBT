@@ -19,12 +19,12 @@ class Dashboard extends Home_proktor{
 	
 	private function _jml_ujian($jenis='all'){
 		$this->db->where('status_soal <> 0');
-		if($jenis == 'lalu'){
-			$this->db->where("selesai < now()");
+    if($jenis == 'lalu'){
+			$this->db->where("DATE(mulai) < CURRENT_DATE()");
 		}elseif($jenis == 'lanjut'){
-			$this->db->where("mulai > now() AND selesai > now()");
+			$this->db->where("DATE(mulai) > CURRENT_DATE()");
 		}elseif($jenis == 'progres'){
-			$this->db->where("mulai <= now() AND selesai >= now()");
+			$this->db->where("DATE(mulai) = CURRENT_DATE()");
 		}
 		return $this->db->count_all_results('ujian');
 	}
