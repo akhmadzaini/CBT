@@ -134,7 +134,6 @@ class Alat extends Home_proktor{
 			$pesan = "<div class=\"alert alert-success\">Proses restore telah berhasil dilaksanakan</div>";
 			$this->session->pesan = $pesan;
 			$this->session->mark_as_flash('pesan');
-      // redirect('?d=proktor&c=alat&m=restore');
       echo "<script>document.location=href='?d=proktor&c=alat&m=restore'</script>";
 		}
 	}
