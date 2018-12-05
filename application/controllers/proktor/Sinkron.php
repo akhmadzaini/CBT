@@ -18,6 +18,7 @@ class Sinkron extends Home_proktor{
   }
   
   function do_tarik(){
+    ini_set('max_execution_time', 0); 
     $post = $this->input->post();
     $target = $post['server_remote'] . '/index.php?c=sinkron&m=tarik';
     $data = [
@@ -32,54 +33,65 @@ class Sinkron extends Home_proktor{
     if($curl->getHttpStatusCode() == 200){
       
       $r = $curl->response;
-      if(!isset($r->pesan) || $r->pesan == 'token_gagal'){
-        json_output(200, array('pesan' => 'token_gagal'));
+      
+      if(is_string($r)) $r = json_decode($r);
+
+      if(!isset($r->pesan)){
+        myob('<p>Gagal tersambung ke server</p><p><a href="?d=proktor&c=sinkron&m=tarik">kembali</a></p>');
+        die();
+      }
+
+      if($r->pesan == 'token_gagal'){
+        myob('<p>Token gagal, server lokal tidak diijinkan untuk melakukan syncx</p><p><a href="?d=proktor&c=sinkron&m=tarik">kembali</a></p>');
+        die();
+      }elseif($r->pesan == 'server_gagal'){
+        myob('<p>Server '. $post['id_server'] .' tidak tersedia</p><p><a href="?d=proktor&c=sinkron&m=tarik">kembali</a></p>');
+        die();
       }else{
-        json_output(200, array('pesan' => 'ok', 'nama_zip' => $r->nama_zip));
-        $curl->close();
+        myob('<p>Sedang mengunduh, mohon tunggu, proses ini memerlukan waktu, bergantung dari koneksi... '. $r->nama_zip .' </p>');
+        // json_output(200, array('pesan' => 'ok', 'nama_zip' => $r->nama_zip));
+        $full_path_zip = $post['server_remote']  . '/index.php?c=sinkron&m=tarik_zip&zip=' . $r->nama_zip;
+        $nama_sinkron = FCPATH . 'public/sinkron_' . $r->nama_zip;
+        file_put_contents($nama_sinkron, fopen($full_path_zip, 'r'));
+        myob('<p>Mengekstrak data sinkron ...</p>');
+        $this->__do_restore($nama_sinkron);
       }
     }else{
-      json_output(200, array('pesan' => 'konek_gagal'));
+      myob('<p>Koneksi dengan server remote gagal</p>');
     }
   }
   
-  function do_tarik_2(){
-    // Simpan zip dari remote ke lokal
-    $nama_zip = $this->input->post('nama_zip');
-    $server_remote = $this->input->post('server_remote');
-    $full_path_zip = $server_remote . '/index.php?c=sinkron&m=tarik_zip&zip=' . $nama_zip;
-    $nama_sinkron = FCPATH . 'public/sinkron_' . $nama_zip;
-    ini_set('max_execution_time', 0); 
-    file_put_contents($nama_sinkron, fopen($full_path_zip, 'r'));
-    json_output(200, array('pesan' => 'ok'));
-  }
-  
-  function do_restore(){
-    ini_set('max_execution_time', 0);
-    
+  private function __do_restore($fullpath_arsip_sinkron){
+    $post = $this->input->post();
+
     // 1. Reset data
-    data_do_reset();
+    myob('<p>Reset data soal lama...</p>');
+    data_do_reset(false, $post['id_server'] != '');
     
     // 2. ekstrak backup
-    $arsip_sinkron = $this->input->post('arsip_sinkron');
-    $fullpath_arsip_sinkron = FCPATH . 'public/sinkron_' . $arsip_sinkron;
+    myob('<p>Mengekstrak berkas sinkronisasi...</p>');
     $ekstrak_path = FCPATH . 'public/tmp-sinkron';
     $berhasil_ekstrak = ekstrak_zip($fullpath_arsip_sinkron, $ekstrak_path);
     
     // 3. pindahkan gambar
+    myob('<p>Sedang menyalin gambar...</p>');
     rcopy($ekstrak_path . '/images', FCPATH . 'images');
     
     // 4. baca data json, sekaligus masukkan ke database
     $string = file_get_contents($ekstrak_path . '/data.json');
     $data = json_decode($string, true);
-    data_do_pemulihan_data($data);
+    myob('<p>Sedang menyalin database...</p>');
+    data_do_pemulihan_data($data, isset($post['server_remote']));
     
     // 5. hapus sisa backup yg tak diperlukan lagi
+    myob('<p>menghapus sisa backup ...</p>');
     unlink($fullpath_arsip_sinkron);
     rrmdir($ekstrak_path);
-    
-    // 6. atur notif
-    json_output(200, array('pesan' => 'ok'));
+
+    myob('<p>Proses backup telah selesai</p>');
+    sleep(3);
+    echo '<script>document.location.href="?d=proktor&c=sinkron&m=tarik"</script>';
+
   }
   
   function kirim(){

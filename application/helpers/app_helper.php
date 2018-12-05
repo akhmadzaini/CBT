@@ -156,9 +156,6 @@ function arsipkan_folder($dir, $zip_file = 'file.zip'){
             $filePath = $file->getRealPath();
             $relativePath = substr($filePath, strlen($rootPath) + 1);
             
-            // echo $filePath . '<br>';
-            // echo $relativePath . '<br>';
-            
             // Add current file to archive
             $zip->addFile($filePath, $relativePath);
         }
@@ -210,34 +207,39 @@ function rcopy($src, $dst) {
     copy ( $src, $dst );
 }
 
-function data_do_pemulihan_data($data){
+function data_do_pemulihan_data($data, $peserta = true){
     ini_set('max_execution_time', 0);
     $CI =& get_instance();
     foreach($data as $nama_tabel => $tabel){
-        foreach($tabel as $row){
-            $d = array();
-            foreach($row as $kolom){
-                $d[] = $CI->db->escape($kolom);
-            }
-            $data = '(' . implode(',', $d) . ')';
-            $sql = "INSERT INTO $nama_tabel VALUES $data";
-            if ($CI->db->conn_id->ping() === FALSE){
-                sleep(1);
-                $CI->db->reconnect();
-            }
-            $CI->db->query($sql);
+      if(($nama_tabel == 'peserta') and (!$peserta)) continue;
+      $jml_baris = count($tabel);
+      foreach($tabel as $k => $row){
+        $percent = round(($k / $jml_baris * 100), 2) . '%';
+        $progres_bar = '<div id="progress" style="width:500px; border:1px solid #ccc;"> \
+        <div style="width:'. $percent .';background-color:#ddd;">&nbsp;</div> \
+        </div>';
+        myob('<p>memproses tabel ' . $nama_tabel . ' '. $percent .'</p>' . $progres_bar);
+        $d = array();
+        foreach($row as $kolom){
+          $d[] = $CI->db->escape($kolom);
         }
+        $data = '(' . implode(',', $d) . ')';
+        $sql = "INSERT INTO $nama_tabel VALUES $data";
+        if ($CI->db->conn_id->ping() === FALSE){
+          usleep(1);
+          $CI->db->reconnect();
+        }
+        $CI->db->query($sql);
+      }
     }
 }
 
-function data_do_reset(){
+function data_do_reset($hapus_peserta_jawaban = true, $hapus_peserta = true){
     $CI =& get_instance();
     // hapus data peserta dan ujian
-    $CI->db->query('DELETE FROM peserta_jawaban');
-    $CI->db->query('DELETE FROM peserta');
-    $CI->db->query('DELETE FROM pilihan_jawaban');
-    $CI->db->query('DELETE FROM soal');
-    $CI->db->query('DELETE FROM ujian');
+    if($hapus_peserta_jawaban) $CI->db->query('DELETE FROM peserta_jawaban');
+    if($hapus_peserta) $CI->db->query('DELETE FROM peserta');
+    $CI->db->query('DELETE FROM ujian'); // cukup hapus ujian, tabel soal dan pilihan akan ikut terhapus (FK)
     // hapus folder gambar
     rrmdir(FCPATH . 'images/');
     mkdir(FCPATH . 'images');
@@ -266,4 +268,12 @@ function bersihkan_gambar($ujian_id){
       }
     }
   }
+}
+
+function myob($var) {
+  echo '<div id="message"></div>';
+  echo '<script>document.getElementById(\'message\').innerHTML = \''. $var .'\';</script>';
+  flush();
+  ob_flush();
+  usleep(1);
 }

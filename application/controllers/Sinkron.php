@@ -6,19 +6,26 @@ class Sinkron extends CI_Controller {
   function tarik(){
 		$this->__cek_token();
     
+    // cek apakah id server tersedia (jika id server terisi)
+    $id_server = $this->input->post('id_server');
+    if($id_server != ''){
+      $this->db->where('server', $id_server);
+      $jml = $this->db->count_all_results('peserta');
+      if($jml == 0){
+        json_output(200, array('pesan' => 'server_gagal'));
+        die();
+      }
+    }
+
 		$token = string_acak(5);
 		$backup_dir = FCPATH . 'backup-' . $token;
 		mkdir($backup_dir);
     
-		$id_server = $this->input->post('id_server');
     $data['ujian'] = $this->db->get('ujian')->result();
 		$data['soal'] = $this->db->get('soal')->result();
 		$data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
-		$data['peserta'] = $this->db->get_where('peserta', array('server' => $id_server))->result();
-		// $data['peserta_jawaban'] = $this->db->get('peserta_jawaban')->result();
-		// json_output(200, array('pesan'=> 'ok', 'data' => $data));
-		
-		// backup db json ke file
+    if($id_server != '') $data['peserta'] = $this->db->get_where('peserta', array('server' => $id_server))->result();
+
 		$fp = fopen($backup_dir . '/data.json', 'w');
 		fwrite($fp, json_encode($data));
 		fclose($fp);

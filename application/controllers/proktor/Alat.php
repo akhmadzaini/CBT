@@ -104,25 +104,29 @@ class Alat extends Home_proktor{
 			$this->session->mark_as_flash('pesan');
 			redirect('?d=proktor&c=alat&m=restore');
 		}else{
-			// 2. reset seluruh ujian
+      // 2. reset seluruh ujian
+      myob('<p>reset data lama...</p>');
 			data_do_reset();
-
+      
 			// 3. ekstrak backup
+      myob('<p>ekstrak backup ...</p>');
 			$backup_file = $this->upload->data('full_path');
 			$backup_raw = $this->upload->data('raw_name');
 			$ekstrak_path = FCPATH . 'public/' . $backup_raw;
 			$berhasil_ekstrak = ekstrak_zip($backup_file, $ekstrak_path);
-
+      
 			// 4. pindahkan gambar
+      myob('<p>menyalin gambar ...</p>');
 			rcopy($ekstrak_path . '/images', FCPATH . 'images');
 			rrmdir($ekstrak_path . '/images');
-
+      
 			// 5. baca data json, sekaligus masukkan ke database
 			$string = file_get_contents($ekstrak_path . '/data.json');
 			$data = json_decode($string, true);
 			data_do_pemulihan_data($data);
-
+      
 			// 6. hapus sisa backup yg tak diperlukan lagi
+      myob('<p>menghapus sisa backup ...</p>');
 			unlink($backup_file);
 			rrmdir($ekstrak_path);
 
@@ -130,7 +134,8 @@ class Alat extends Home_proktor{
 			$pesan = "<div class=\"alert alert-success\">Proses restore telah berhasil dilaksanakan</div>";
 			$this->session->pesan = $pesan;
 			$this->session->mark_as_flash('pesan');
-			redirect('?d=proktor&c=alat&m=restore');
+      // redirect('?d=proktor&c=alat&m=restore');
+      echo "<script>document.location=href='?d=proktor&c=alat&m=restore'</script>";
 		}
 	}
 

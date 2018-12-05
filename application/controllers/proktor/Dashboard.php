@@ -32,13 +32,13 @@ class Dashboard extends Home_proktor{
 	private function _list_ujian($jenis='all'){
 		$this->db->where('status_soal <> 0');
 		if($jenis == 'lalu'){
-			$this->db->where("selesai < now()");
+			$this->db->where("DATE(mulai) < CURRENT_DATE()");
 		}elseif($jenis == 'lanjut'){
-			$this->db->where("mulai > now() AND selesai > now()");
+			$this->db->where("DATE(mulai) > CURRENT_DATE()");
 		}elseif($jenis == 'progres'){
-			$this->db->where("mulai <= now() AND selesai >= now()");
+			$this->db->where("DATE(mulai) = CURRENT_DATE()");
 		}
-		$this->db->join('peserta', 'ujian.ujian_id = peserta.ujian_id');
+		$this->db->join('peserta', 'ujian.ujian_id = peserta.ujian_id', 'left');
 		$this->db->group_by('ujian.ujian_id');
 		$this->db->select('ujian.*');
 		$this->db->select('COUNT(peserta.login) AS jml_peserta');
