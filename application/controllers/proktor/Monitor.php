@@ -104,6 +104,8 @@ class Monitor extends Home_proktor{
     $this->db->set('password', $post['password']);
     $this->db->set('nama', $post['nama']);
     $this->db->set('server', $post['server']);
+    $this->db->set('kelas', $post['kelas']);
+    $this->db->set('sesi', $post['sesi']);
     $this->db->insert('peserta');
     redirect('d=proktor&c=monitor&m=peserta&ujian_id=' . $post['ujian_id']);
   }

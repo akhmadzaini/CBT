@@ -134,6 +134,18 @@
                         <input type="text" class="form-control" name="server" placeholder="ID server lokal" value="" required="">
                       </div>
                   </div>
+                  <label>Kelas</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" class="form-control" name="kelas" placeholder="Kelas" value="" required="">
+                      </div>
+                  </div>
+                  <label>Sesi</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" class="form-control" name="sesi" placeholder="Sesi" value="" required="">
+                      </div>
+                  </div>
               </div>
               <div class="modal-footer">
                 <button type="submit" class="btn btn-primary waves-effect pull-left">Simpan</button>
