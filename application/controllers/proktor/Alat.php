@@ -48,6 +48,9 @@ class Alat extends Home_proktor{
   }
 	
 	function do_backup(){
+    ini_set('memory_limit','256M');
+    ini_set('max_execution_time', 0);
+
 		// buat direktori backup
 		$token = string_acak(5);
 		$backup_dir = FCPATH . 'backup-' . $token;

@@ -52,6 +52,7 @@ class Sinkron extends Home_proktor{
         // json_output(200, array('pesan' => 'ok', 'nama_zip' => $r->nama_zip));
         $full_path_zip = $post['server_remote']  . '/index.php?c=sinkron&m=tarik_zip&zip=' . $r->nama_zip;
         $nama_sinkron = FCPATH . 'public/sinkron_' . $r->nama_zip;
+        myob('<p>Sedang mengunduh, mohon tunggu, proses ini memerlukan waktu, bergantung dari koneksi... '. $r->nama_zip .' </p>');
         file_put_contents($nama_sinkron, fopen($full_path_zip, 'r'));
         myob('<p>Mengekstrak data sinkron ...</p>');
         $this->__do_restore($nama_sinkron);
