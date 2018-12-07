@@ -213,6 +213,7 @@ function data_do_pemulihan_data($data, $peserta = true){
     foreach($data as $nama_tabel => $tabel){
       if(($nama_tabel == 'peserta') and (!$peserta)) continue;
       $jml_baris = count($tabel);
+      $CI->db->trans_start();
       foreach($tabel as $k => $row){
         $percent = round(($k / $jml_baris * 100), 2) . '%';
         $progres_bar = '<div id="progress" style="width:500px; border:1px solid #ccc;"> \
@@ -225,12 +226,9 @@ function data_do_pemulihan_data($data, $peserta = true){
         }
         $data = '(' . implode(',', $d) . ')';
         $sql = "INSERT INTO $nama_tabel VALUES $data";
-        if ($CI->db->conn_id->ping() === FALSE){
-          usleep(1);
-          $CI->db->reconnect();
-        }
         $CI->db->query($sql);
       }
+      $CI->db->trans_complete();
     }
 }
 
