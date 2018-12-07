@@ -42,6 +42,8 @@ class Excel extends CI_Controller {
 	}
 
 	function sunting_ujian(){
+    ini_set('max_execution_time', 0); 
+
 		$post = $this->input->post();
     // $selesai = interval_tgl($post['mulai'], $post['alokasi']);
     $selesai = jam_akhir($post['mulai']);
@@ -54,15 +56,8 @@ class Excel extends CI_Controller {
 		if($this->db->count_all_results('ujian') == 0){
 			json_output(200, array('pesan' => 'ujian_tak_tersedia'));
 			die();
-		}
-
-		// Periksa apakah soal ujian sudah terkunci
-		// $this->db->where("ujian_id='$ujian_id' AND status_soal=2");
-		// if($this->db->count_all_results('ujian') > 0){
-		// 	json_output(200, array('pesan' => 'terkunci'));
-		// 	die();
-		// }
-
+    }
+    
 		// Sunting data ujian
 		$sql = "UPDATE ujian 
 				SET mulai = '$post[mulai]', selesai = '$selesai', alokasi = '$post[alokasi]',
@@ -74,23 +69,25 @@ class Excel extends CI_Controller {
 		$r = $this->db->query("SELECT status_soal FROM ujian WHERE ujian_id='$ujian_id'")->row();
 		$status_soal = $r->status_soal;
 
-		// Reset data peserta ujian
-		$this->db->query("DELETE FROM peserta WHERE ujian_id='$ujian_id'");
-
-		// Masukkan data peserta
-		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
-		foreach($peserta as $p){
-			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '". strtoupper($p['login']) ."', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
-		}
-		$sql .= implode(',', $rows);
-		$this->db->query($sql);
+    // tambahkan kolom ujian_id pada array peserta
+    array_walk($peserta, function(&$item, $key){
+      $item['ujian_id'] = $this->input->post('ujian_id');      
+    });
+    
+    // generate sql replace
+    $sql = insert_or_update('peserta', ['ujian_id', 'nis', 'login'], $peserta);
+    $this->db->trans_start();
+    foreach ($sql as $key => $value) {
+      $this->db->query($value);
+    }
+    $this->db->trans_complete();
 
 		// Atur nilai kembalian pada console json
 		$hasil = array(
 			'pesan' => 'ok',
 			'ujian_id' => $ujian_id,
-			'status_soal' => $status_soal,
+      'status_soal' => $status_soal,
+      'jml_peserta' => count($sql)
 		);
 		json_output(200, $hasil);
 	}
@@ -155,6 +152,6 @@ class Excel extends CI_Controller {
 			);
 		}
 		echo json_encode($hasil);
-	}
+  }
 
 }

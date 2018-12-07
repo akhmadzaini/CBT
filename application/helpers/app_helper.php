@@ -291,3 +291,26 @@ function replace_batch($table, $values){
   }
   return 'REPLACE INTO '.$table.' ('.implode(', ', $keys).') VALUES '.implode(', ', $rows);
 }
+
+function insert_or_update($table, $keys, $values){
+  $CI =& get_instance(); 
+  $hasil = array();
+  $str_keys = implode(',', array_keys($values[0]));
+  foreach($values as $baris){
+    array_walk($baris, function(&$item, $idx) use ($CI){
+      $item = $CI->db->escape($item);
+    });
+    $str_baris = implode(',', $baris);
+    $query = "INSERT INTO $table ($str_keys) VALUES ($str_baris) ";
+    // generate on duplicate
+    $dup = [];
+    foreach($baris as $field=>$cell){
+      if(in_array($field, $keys)) continue;
+      $dup[] = "$field = $cell";
+    }
+    $dup = implode(',', $dup);
+    $query .= "ON DUPLICATE KEY UPDATE $dup";
+    $hasil[] = $query;
+  }
+  return $hasil;
+}
