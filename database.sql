@@ -43,11 +43,10 @@ CREATE TABLE IF NOT EXISTS `peserta` (
   `status` char(1) NOT NULL DEFAULT '0' COMMENT '0 : Belum ujian, 1 : Login tapi belum token, 2 : Sedang ujian, 3 : Selesai ujian',
   `last_login` datetime DEFAULT NULL,
   PRIMARY KEY (`ujian_id`,`nis`,`login`),
-  KEY `last_login` (`last_login`),
-  CONSTRAINT `FK_peserta_ujian` FOREIGN KEY (`ujian_id`) REFERENCES `ujian` (`ujian_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `last_login` (`last_login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Membuang data untuk tabel usbn.peserta: ~0 rows (lebih kurang)
+-- Membuang data untuk tabel usbn.peserta: ~2.125 rows (lebih kurang)
 /*!40000 ALTER TABLE `peserta` DISABLE KEYS */;
 /*!40000 ALTER TABLE `peserta` ENABLE KEYS */;
 
@@ -62,8 +61,7 @@ CREATE TABLE IF NOT EXISTS `peserta_jawaban` (
   `ragu` char(1) DEFAULT '0' COMMENT '0 : tidak ragu, 1 : ragu',
   `pilihan_skor` float DEFAULT '0',
   `essay_skor` float DEFAULT NULL,
-  PRIMARY KEY (`ujian_id`,`nis`,`login`,`no_soal`),
-  CONSTRAINT `peserta_jawaban_ibfk_1` FOREIGN KEY (`ujian_id`) REFERENCES `ujian` (`ujian_id`)
+  PRIMARY KEY (`ujian_id`,`nis`,`login`,`no_soal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
 -- Membuang data untuk tabel usbn.peserta_jawaban: ~0 rows (lebih kurang)
@@ -80,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `pilihan_jawaban` (
   CONSTRAINT `FK_pilihan_jawaban_ujian` FOREIGN KEY (`ujian_id`) REFERENCES `ujian` (`ujian_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Membuang data untuk tabel usbn.pilihan_jawaban: ~0 rows (lebih kurang)
+-- Membuang data untuk tabel usbn.pilihan_jawaban: ~3.480 rows (lebih kurang)
 /*!40000 ALTER TABLE `pilihan_jawaban` DISABLE KEYS */;
 /*!40000 ALTER TABLE `pilihan_jawaban` ENABLE KEYS */;
 
@@ -111,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `soal` (
   CONSTRAINT `FK_soal_ujian` FOREIGN KEY (`ujian_id`) REFERENCES `ujian` (`ujian_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Membuang data untuk tabel usbn.soal: ~0 rows (lebih kurang)
+-- Membuang data untuk tabel usbn.soal: ~980 rows (lebih kurang)
 /*!40000 ALTER TABLE `soal` DISABLE KEYS */;
 /*!40000 ALTER TABLE `soal` ENABLE KEYS */;
 
@@ -137,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `ujian` (
   KEY `judul` (`judul`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Membuang data untuk tabel usbn.ujian: ~0 rows (lebih kurang)
+-- Membuang data untuk tabel usbn.ujian: ~30 rows (lebih kurang)
 /*!40000 ALTER TABLE `ujian` DISABLE KEYS */;
 /*!40000 ALTER TABLE `ujian` ENABLE KEYS */;
 
