@@ -70,9 +70,8 @@
         var data = frm.serialize();
         $('.loader').waitMe();
         $.post(target, data, function(hasil){
-          // console.log(hasil);
           $('.loader').waitMe('hide');
-          swal('Jumlah data terkirim : ' + hasil.aff_rows + ' data');
+          swal(hasil.rincian.peserta + ' data peserta dan ' + hasil.rincian.peserta_jawaban + ' data jawaban peserta telah terkirim');
         });
       });
       

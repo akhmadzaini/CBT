@@ -56,21 +56,28 @@ class Sinkron extends CI_Controller {
 	}
   
 	function terima_nilai(){
+    ini_set('max_execution_time', 0);
     $this->__cek_token();
-    $data = json_decode($this->input->post('data'));
+    $peserta = json_decode($this->input->post('peserta'));
+    $peserta_jawaban = json_decode($this->input->post('peserta_jawaban'));
     $id_server = $this->input->post('id_server');
+
+    $jml_peserta = count($peserta); 
+    $jml_peserta_jawaban = count($peserta_jawaban);
     
-		if(count($data) > 0){
-			// Hapus jawaban peserta yang lama
-			$this->db->query("DELETE FROM peserta_jawaban 
-                        WHERE nis IN (SELECT nis FROM peserta WHERE server = '$id_server')");
-			
-			// Masukan jawaban baru
-			$aff_rows = $this->db->insert_batch('peserta_jawaban', $data);
-		}else{
-			$aff_rows = 0;
+		if($jml_peserta > 0){
+      $pecahan_peserta = array_chunk($peserta, 100);
+      foreach($pecahan_peserta as $pecahan){
+        $this->db->query(replace_batch('peserta', $pecahan));
+      }        
+    }
+    if($jml_peserta_jawaban > 0){
+      $pecahan_peserta_jawaban = array_chunk($peserta_jawaban, 100);
+      foreach($pecahan_peserta_jawaban as $pecahan){
+        $this->db->query(replace_batch('peserta_jawaban', $pecahan));
+      }
 		}
-		json_output(200, ['aff_rows' => $aff_rows]);
+		json_output(200, ['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban]);
 	}
   
 	private function __cek_token(){

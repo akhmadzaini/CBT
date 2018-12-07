@@ -277,3 +277,17 @@ function myob($var) {
   ob_flush();
   usleep(1);
 }
+
+function replace_batch($table, $values){
+  $CI =& get_instance();
+  $keys = array_keys((array)$values[0]);
+  $rows = [];
+  foreach($values as $row){
+    $row = (array)$row;
+    foreach($row as $k => $elm){
+      $row[$k] = $CI->db->escape($elm);
+    }
+    $rows[] = '(' . implode(',' , $row) . ')';
+  }
+  return 'REPLACE INTO '.$table.' ('.implode(', ', $keys).') VALUES '.implode(', ', $rows);
+}

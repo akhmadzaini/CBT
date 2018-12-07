@@ -102,15 +102,19 @@ class Sinkron extends Home_proktor{
   function do_kirim(){
     $post = $this->input->post();
     $target = $post['server_remote'] . '/index.php?c=sinkron&m=terima_nilai';
-    $sql= "SELECT b.*
-    FROM peserta a
-    LEFT JOIN peserta_jawaban b ON a.ujian_id = b.ujian_id AND a.nis = b.nis AND a.login = b.login
-    WHERE a.server = '$post[id_server]' AND b.ujian_id IS NOT NULL";
-    $data = $this->db->query($sql)->result();
+    $sql_jawaban = "SELECT a.*
+    FROM peserta_jawaban a
+    LEFT JOIN peserta b 
+    ON a.ujian_id = b.ujian_id
+    AND a.nis = b.nis
+    AND a.login = b.login
+    WHERE b.server  = '$post[id_server]'";
+    log_message('custom', $sql_jawaban);
     $data = [
       'token' => $this->token,
       'id_server' => $post['id_server'],
-      'data' => json_encode($data)
+      'peserta' => json_encode($this->db->get_where('peserta', array('server' => $post['id_server']))->result()),
+      'peserta_jawaban' => json_encode($this->db->query($sql_jawaban)->result()),
     ];
     
     // kirim request ke server remote
@@ -118,7 +122,8 @@ class Sinkron extends Home_proktor{
     $curl->post($target, $data);
     if($curl->getHttpStatusCode() == 200){
       $r = $curl->response;
-      json_output(200, ['pesan' => 'ok', 'aff_rows' => $r->aff_rows]);
+      json_output(200, ['pesan'           => 'ok', 
+                        'rincian'        => $r]);
     }else{
       json_output(200, array('pesan' => 'konek_gagal', 'resp' => $curl->getHttpStatusCode()));
     }
