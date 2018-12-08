@@ -180,9 +180,6 @@
                 </span>
               </div>
               <p>&nbsp;</p>
-              <p>Skor : </p>
-              <h1>{{ skor }}</h1>
-              
             </div>
             <div class="modal-footer">
               <button type="button" class="btn-reset-peserta btn btn-primary waves-effect pull-left" v-if="(status!=0)">Reset login</button>
@@ -245,7 +242,6 @@
               namaUjian: '...',
               sisaWaktu: '...',
               jawaban: [],
-              skor: 0,
               clsJawaban: function(jawaban, ragu){
                 var cls = '';
                 if(jawaban != null){
@@ -276,16 +272,11 @@
               ujian_id: $(this).data('ujian_id'),
             }
             $.getJSON('<?=site_url()?>', data, function(hasil){
-              var skor = 0;
-              $.each(hasil.jawaban, function(k, v){
-                skor += Number(v.pilihan_skor);
-              });
               app2.namaPeserta = hasil.nama_peserta;
               app2.namaUjian = hasil.nama_ujian;
               app2.sisaWaktu = hasil.waktu_selesai;
               app2.jawaban = hasil.jawaban;
               app2.status = hasil.status;
-              app2.skor = skor;
               app2.login = $(this).data('login');
               app2.ujian_id = $(this).data('ujian_id');
               $('.detail-peserta').waitMe('hide');
