@@ -72,6 +72,7 @@
           <thead class="kelompok kelompok2">
             <tr>
               <th>#</th>
+              <th>Server</th>
               <th>Sesi</th>
               <th>Cetak</th>
             </tr>
@@ -95,9 +96,10 @@
             <?php foreach($kelompok2 as $r):?>
             <tr>
               <td><?=$n++?></td>
+              <td><?=$r->server?></td>
               <td><?=$r->sesi?></td>
               <td>
-                <a href="javascript:void(0)" class="btn-cetak-detail" data-url="" data-sesi="<?=$r->sesi?>" >
+                <a href="javascript:void(0)" class="btn-cetak-detail" data-url="" data-sesi="<?=$r->sesi?>" data-server="<?=$r->server?>" >
                   <i class="material-icons">print</i>
                 </a>
               </td>

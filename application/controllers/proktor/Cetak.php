@@ -27,8 +27,8 @@ class Cetak extends Home_proktor{
     ORDER BY  kelas ASC";
     $data['kelompok'] = $this->db->query($sql)->result();
 
-    $sql = "SELECT DISTINCT sesi FROM peserta 
-    ORDER BY sesi";
+    $sql = "SELECT DISTINCT sesi,server FROM peserta 
+    ORDER BY server,sesi";
     $data['kelompok2'] = $this->db->query($sql)->result();
     
     $this->load->view('proktor/cetak/index', $data);
@@ -113,7 +113,7 @@ class Cetak extends Home_proktor{
       }
     }	
     
-    $pdf->Output();
+    $pdf->Output('kartu_'.get_app_config('NAMA_SEKOLAH').'.pdf', 'D');
     
     
     
@@ -122,8 +122,9 @@ class Cetak extends Home_proktor{
   
   function presensi(){
     $ujian_id = $_GET['ujian_id'];
+    $server = $_GET['server'];
     $sesi = $_GET['sesi'];
-    $sql = "SELECT nis, nama FROM peserta 
+    $sql = "SELECT nis, nama, server FROM peserta 
     WHERE ujian_id = '$ujian_id'
     AND sesi = '$sesi'
     ORDER BY  kelas, nama";
@@ -221,7 +222,7 @@ class Cetak extends Home_proktor{
       $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1 Lembar Dinas Pendidikan',0,1);
     }	
     
-    $pdf->Output();
+    $pdf->Output('daftarhadir_'.$server.'-'.$sesi.'-'.get_app_config('NAMA_SEKOLAH').'.pdf', 'D');
     
   }
   
@@ -308,7 +309,7 @@ class Cetak extends Home_proktor{
     $pdf->Cell(10 ,4,'',0,0);$pdf->Cell(40 ,6,'1 Lembar Dinas Pendidikan',0,1);
     
     
-    $pdf->Output();
+    $pdf->Output('beritaacara_'.get_app_config('NAMA_SEKOLAH').'.pdf', 'D');
   }
   
   function essay(){
@@ -367,7 +368,7 @@ class Cetak extends Home_proktor{
       }
       $pdf->Ln(5);
     }
-    $pdf->Output();
+    $pdf->Output('esay_'.$nama_ujian.'-'.$post['kelas'].'-'.get_app_config('NAMA_SEKOLAH').'.pdf', 'D');
     
   }
   
