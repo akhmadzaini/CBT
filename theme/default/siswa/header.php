@@ -24,7 +24,7 @@
                 <div class="col-md-12">
                     <div id="logo">
                         <div id="logo-container">
-                            <img src="<?=(base_url('assets/') . get_app_config('LOGO_SEKOLAH'))?>">
+                            <img src="<?=(base_url('assets/') . get_app_config('LOGO_SEKOLAH'))?>?v=<?=string_acak(10)?>">
                         </div>
                         <div style="float: left; margin-left: 10px">
                             <p style="font-size: 125%; margin-bottom: 0; padding-top: 5px">DINAS PENDIDIKAN, PEMUDA DAN OLAHRAGA KOTA PROBOLINGGO</p>
