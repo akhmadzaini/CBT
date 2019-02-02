@@ -24,14 +24,8 @@ class Excel extends CI_Controller {
 				VALUES ('$ujian_id', '$post[mulai]', '$selesai', $post[alokasi], $post[jml_soal], $post[acak])";
 		$this->db->query($sql);
 
-		// Masukkan data peserta
-		$sql = "INSERT INTO peserta (ujian_id, nis, login, nama, password, server, sesi, kelas) VALUES ";
-		foreach($peserta as $p){
-			$nama = mysqli_real_escape_string($this->db->conn_id, $p['nama']);
-			$rows[] = "('$ujian_id', '$p[nis]', '$p[login]', '$nama', '$p[password]', '$p[server]', '$p[sesi]', '$p[kelas]')";
-		}
-		$sql .= implode(',', $rows);
-		$this->db->query($sql);
+    // masukkan data peserta
+    $this->insert_or_update_peserta($peserta);
 
 		// Atur nilai kembalian pada console json
 		$hasil = array(
@@ -48,7 +42,8 @@ class Excel extends CI_Controller {
     // $selesai = interval_tgl($post['mulai'], $post['alokasi']);
     $selesai = jam_akhir($post['mulai']);
     log_message('custom', "mulai : $post[mulai], selesai : $selesai");
-		$peserta = json_decode($post['peserta'], TRUE);
+    $peserta = json_decode($post['peserta'], TRUE);
+
 		$ujian_id = $post['ujian_id'];
 
 		// Periksa apakah id ujian telah tersedia
@@ -74,6 +69,20 @@ class Excel extends CI_Controller {
       $item['ujian_id'] = $this->input->post('ujian_id');      
     });
     
+    // masukkan data peserta
+    $this->insert_or_update_peserta($peserta);
+
+		// Atur nilai kembalian pada console json
+		$hasil = array(
+			'pesan' => 'ok',
+			'ujian_id' => $ujian_id,
+      'status_soal' => $status_soal,
+      'jml_peserta' => count($peserta)
+		);
+		json_output(200, $hasil);
+  }
+  
+  function insert_or_update_peserta($peserta) {
     // generate sql replace
     $sql = insert_or_update('peserta', ['ujian_id', 'nis', 'login'], $peserta);
     $this->db->trans_start();
@@ -81,16 +90,7 @@ class Excel extends CI_Controller {
       $this->db->query($value);
     }
     $this->db->trans_complete();
-
-		// Atur nilai kembalian pada console json
-		$hasil = array(
-			'pesan' => 'ok',
-			'ujian_id' => $ujian_id,
-      'status_soal' => $status_soal,
-      'jml_peserta' => count($sql)
-		);
-		json_output(200, $hasil);
-	}
+  }
 
 	function tarik_nilai(){
 		$post = $this->input->post();
@@ -105,8 +105,9 @@ class Excel extends CI_Controller {
 			die();
     }
     
+    // ==============Langkah pengambilan data jawaban pilihan ganda
     // ambil data kunci jawaban
-    $sql = "SELECT no_soal, jawaban, skor
+    $sql = "SELECT no_soal, jawaban, skor, indikator
           FROM soal
           WHERE essay = 0
           AND ujian_id = '$post[ujian_id]'
@@ -121,20 +122,83 @@ class Excel extends CI_Controller {
 			$sql_add[] = "(SELECT pilihan FROM  peserta_jawaban 
 						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS no_$no";
 		}
-		$sql_add = implode(',', $sql_add);
+    $sql_add = implode(',', $sql_add);
+
+    //================Langkah pengambilan nilai essay
+    $sql = "SELECT no_soal, skor, indikator
+          FROM soal
+          WHERE essay = 1
+          AND ujian_id = '$post[ujian_id]'
+          ORDER BY no_soal";
+    $soal_essay = $this->db->query($sql)->result();
+    // Generate query kolom untuk no soal
+		$sql_add2 = array();
+		foreach($soal_essay as $r){
+      $no = $r->no_soal;
+			$sql_add2[] = "(SELECT essay_skor FROM  peserta_jawaban 
+						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS nilai_essay_$no";
+		}
+    $sql_add2 = implode(',', $sql_add2);
+
 		
-		$sql = "SELECT a.nis, a.nama, a.status, a.last_login,	$sql_add
+		$sql = "SELECT a.nis, a.nama, a.nama_sekolah, a.status, a.last_login,	$sql_add, $sql_add2
 				FROM peserta a
         WHERE a.ujian_id = '$post[ujian_id]'
-        ORDER BY a.server, a.kelas, a.nama";
+        ORDER BY a.nama_sekolah, a.kelas, a.server";
+        
+		$data = array(
+      'pesan' => 'ok' , 
+      'data' => $this->db->query($sql)->result_array(), 
+      'kunci_jawaban' => $kunci_jawaban,
+      'soal_essay' => $soal_essay
+    );
+		json_output(200, $data);
+  }
+  
+  function tarik_nilai_essay() {
+    $post = $this->input->post();
+		if(empty($post)){
+			die('request tidak sah');
+		}
+
+		// Periksa apakah id ujian telah tersedia
+		$this->db->where("ujian_id='$post[ujian_id]'");
+		if($this->db->count_all_results('ujian') == 0){
+			json_output(200, array('pesan' => 'ujian_tak_tersedia'));
+			die();
+    }
+
+    // ambil data kunci jawaban
+    $sql = "SELECT no_soal, skor, indikator
+    FROM soal
+    WHERE essay = 1
+    AND ujian_id = '$post[ujian_id]'
+    ORDER BY no_soal";
+    $kunci_jawaban = $this->db->query($sql)->result();
+    $jml_soal = count($kunci_jawaban);
+
+		// Generate query kolom untuk no soal
+		$sql_add = array();
+		foreach($kunci_jawaban as $r){
+      $no = $r->no_soal;
+			$sql_add[] = "(SELECT essay_skor FROM  peserta_jawaban 
+						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS no_$no";
+		}
+    $sql_add = implode(',', $sql_add);
+		
+		$sql = "SELECT a.nis, $sql_add
+				FROM peserta a
+        WHERE a.ujian_id = '$post[ujian_id]'
+        ORDER BY a.nama_sekolah, a.kelas, a.server";
         
 		$data = array(
       'pesan' => 'ok' , 
       'data' => $this->db->query($sql)->result_array(), 
       'kunci_jawaban' => $kunci_jawaban
     );
-		json_output(200, $data);
-	}
+		json_output(200, $data);    
+
+  }
 
 	function reset_status_login_siswa(){
 		$post = $this->input->post();

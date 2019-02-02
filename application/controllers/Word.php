@@ -209,19 +209,20 @@ class Word extends CI_Controller {
     foreach($dom_soal as $k => $baris){
       if($k == 0) {continue;}
       $kolom = $baris->childNodes;
-      if($kolom->length == 4){
+      if($kolom->length == 5){
         // Jika baris merupakan baris soal
         $soal = array(	
           'konten' 	=> get_inner_html($kolom->item(1)), 
           'jawaban' => trim(strtoupper($kolom->item(2)->nodeValue)),
           'skor' 		=> (float)$kolom->item(3)->nodeValue,
-          'essay'		=> 0
+          'essay'		=> 0,
+          'indikator' => $kolom->item(4)->nodeValue
         );
         $arr_soal[$nomor++] = array(
           'soal' 		=> $soal,
           'pilihan' 	=> array()
         );
-      }else if($kolom->length == 2){
+      }else if($kolom->length == 3){
         // Jika baris merupakan baris soal essay
         $soal = array(	
           'konten' 	=> get_inner_html($kolom->item(1)),
@@ -233,7 +234,7 @@ class Word extends CI_Controller {
           'soal' 		=> $soal,
           'pilihan' 	=> array()
         );
-      }else if($kolom->length == 5){
+      }else if($kolom->length == 6){
         // Jika baris merupakan baris jawaban
         $idx = trim(strtoupper($kolom->item(1)->nodeValue));
         $idx = $idx[0];
@@ -280,13 +281,14 @@ class Word extends CI_Controller {
     $this->db->query($sql);
     
     // Simpan soal beserta pilihan jawaban
-    $sql = "INSERT INTO soal (ujian_id, no_soal, essay, konten, jawaban, skor) VALUES ";
+    $sql = "INSERT INTO soal (ujian_id, no_soal, essay, konten, jawaban, skor, indikator) VALUES ";
     $sql2 = "INSERT INTO pilihan_jawaban (ujian_id, no_soal, pilihan_ke, konten) VALUES ";
     $baris = array();
     $baris2 = array();
     foreach($arr_soal as $no_soal => $butir){
       $soal = $butir['soal'];
-      $baris[] = "('$ujian_id', $no_soal, '$soal[essay]', '". $this->db->escape_str($soal['konten']) ."', TRIM('$soal[jawaban]'), $soal[skor])";
+      $baris[] = "('$ujian_id', $no_soal, '$soal[essay]', '". $this->db->escape_str($soal['konten']) ."', TRIM('$soal[jawaban]'), $soal[skor]
+                  , '". $this->db->escape_str($soal['indikator']) ."')";
       foreach($butir['pilihan'] as $pilihan_ke => $konten){
         $baris2[] = "('$ujian_id', $no_soal, '$pilihan_ke', '". $this->db->escape_str($konten) ."')";
       }
