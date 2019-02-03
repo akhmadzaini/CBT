@@ -222,13 +222,14 @@ class Word extends CI_Controller {
           'soal' 		=> $soal,
           'pilihan' 	=> array()
         );
-      }else if($kolom->length == 3){
+      }else if($kolom->length == 4){
         // Jika baris merupakan baris soal essay
         $soal = array(	
           'konten' 	=> get_inner_html($kolom->item(1)),
           'jawaban'	=> '',
-          'skor'		=> 0,     							
-          'essay'		=> 1
+          'skor'		=> (float)$kolom->item(2)->nodeValue,     							
+          'essay'		=> 1,
+          'indikator' => $kolom->item(3)->nodeValue
         );
         $arr_soal[$nomor++] = array(
           'soal' 		=> $soal,
