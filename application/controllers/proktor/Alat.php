@@ -28,7 +28,7 @@ class Alat extends Home_proktor{
     $data['ujian'] = $this->db->query($sql)->result();
     $this->load->view('proktor/alat/unggah_nilai_essay', $data);
   }
-
+  
   function submit_unggah_nilai_essay() {
     $ujian_id = $this->input->post('ujian_id');
     $config['upload_path'] = './public/';
@@ -38,8 +38,9 @@ class Alat extends Home_proktor{
     $this->upload->do_upload('file_nilai');
     $file = $this->upload->data();
     $file = $file['full_path'];
-
+    
     $spreadsheet = IOFactory::load($file);
+    unlink($file);
     $data = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
     $header = $data[6];
@@ -67,6 +68,7 @@ class Alat extends Home_proktor{
     }    
     
     $jml_query = 0;
+    $jml_query_gagal = 0;
     $sql = insert_or_update('peserta_jawaban', ['ujian_id', 'nis', 'login'], $nilai_essay);
     $this->db->trans_start();
     foreach ($sql as $key => $value) {
@@ -80,17 +82,18 @@ class Alat extends Home_proktor{
       if($r->jml > 0){
         $this->db->query($value);
         $jml_query++;
+      }else{
+        $jml_query_gagal++;
       }
     }
     $this->db->trans_complete();
     $this->session->pesan = '
     <div class="alert alert-info">
-      <strong>Sukses</strong>, sistem telah menyimpan '.$jml_query.' data.
+      <strong>Unggah selesai</strong>, sistem telah memproses '.$jml_query.' data dan gagal memproses '. $jml_query_gagal .' data.
     </div>
     ';
 		$this->session->mark_as_flash('pesan');
 		redirect('?d=proktor&c=alat&m=unggah_nilai_essay');
-    unlink($file);
 
 
   }
