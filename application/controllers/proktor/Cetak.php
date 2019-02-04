@@ -5,6 +5,9 @@
 require_once APPPATH . 'controllers/proktor/Home_proktor.php';
 require_once FCPATH . 'vendor/autoload.php';
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 class PDFKU extends FPDF {
   function Footer() {
       // Go to 1.5 cm from bottom
@@ -371,5 +374,80 @@ class Cetak extends Home_proktor{
     $pdf->Output('esay_'.$nama_ujian.'-'.$post['kelas'].'-'.get_app_config('NAMA_SEKOLAH').'.pdf', 'D');
     
   }
+
+  function unduh_template_nilai_essay() {
+    $ujian_id = $this->input->get('ujian_id');
+    $kelas = $this->input->get('kelas');
+
+    $sql = "SELECT judul FROM ujian WHERE ujian_id = '$ujian_id'";
+    $data = $this->db->query($sql)->row();
+
+    // Create new Spreadsheet object
+    $spreadsheet = new Spreadsheet();
+
+    // Atur judul kolom
+    $spreadsheet->setActiveSheetIndex(0)
+    ->setCellValue('B2', 'Mapel')
+    ->setCellValue('C2', $data->judul)
+    ->setCellValue('B3', 'Kelas')
+    ->setCellValue('C3', $kelas)
+    ->setCellValue('B5', 'Nilai Maksimal')
+    ->setCellValue('B6', 'No')
+    ->setCellValue('C6', 'NIS')
+    ->setCellValue('D6', 'Login')
+    ->setCellValue('E6', 'Nama');
+
+    // Atur judul kolom yang dinamis
+    $sql = "SELECT no_soal, skor FROM soal 
+            WHERE essay = 1 AND ujian_id = '$ujian_id' 
+            ORDER BY no_soal";
+    $data = $this->db->query($sql)->result();
+
+    $kolom = 6;
+    foreach($data as $r){
+      $spreadsheet->setActiveSheetIndex(0)
+      ->setCellValueByColumnAndRow($kolom, 5, $r->skor)
+      ->setCellValueByColumnAndRow($kolom++, 6, $r->no_soal);
+    }
+
+    // Atur nama-nama siswa
+    $sql = "SELECT nis, login, nama
+            FROM peserta 
+            WHERE ujian_id = '$ujian_id'
+            AND kelas = '$kelas'
+            ORDER BY nis";
+    $data = $this->db->query($sql)->result();
+    $baris = 7;
+    foreach($data as $r){
+      $spreadsheet->setActiveSheetIndex(0)
+      ->setCellValueByColumnAndRow(2, $baris, $baris - 6)
+      ->setCellValueByColumnAndRow(3, $baris, $r->nis)
+      ->setCellValueByColumnAndRow(4, $baris, strtoupper($r->login))
+      ->setCellValueByColumnAndRow(5, $baris++, strtoupper($r->nama));
+    }
+
+    // Atur lebar kolom
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('B')->setWidth(5);
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('C')->setWidth(15);
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('D')->setWidth(15);
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('E')->setWidth(45);
+
+    // Redirect output to a client’s web browser (Xlsx)
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="nilai_essay.xlsx"');
+    header('Cache-Control: max-age=0');
+    // If you're serving to IE 9, then the following may be needed
+    header('Cache-Control: max-age=1');
+
+    // If you're serving to IE over SSL, then the following may be needed
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+    header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header('Pragma: public'); // HTTP/1.0
+
+    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $writer->save('php://output');
+    exit;
+  }  
   
 }

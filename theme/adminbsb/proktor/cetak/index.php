@@ -38,6 +38,7 @@
                 <td><?=$r->mulai?></td>
                 <td><?=$r->selesai?></td>
                 <td>
+                  <a class="btn-cetak" data-judul="Unduh template nilai essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=unduh_template_nilai_essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" data-kelompok="kelompok1"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Template Nilai Essay">file_download</i></a>
                   <a class="btn-cetak" data-judul="Cetak jawaban essay" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=essay&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" data-kelompok="kelompok1"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Jawaban Essay">message</i></a>
                   <a href="<?=site_url('?d=proktor&c=cetak&m=kartu_peserta&ujian_id=' . $r->ujian_id)?>" target="_blank"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Kartu peserta ujian">class</i></a>
                   <a class="btn-cetak" data-judul="Cetak presensi" data-ujian_id="<?=$r->ujian_id?>" data-url="<?=site_url('?d=proktor&c=cetak&m=presensi&ujian_id=' . $r->ujian_id)?>" href="javascript:void(0)" data-kelompok="kelompok2"><i class="material-icons" data-toggle="tooltip" data-placement="top" title data-original-title="Presensi">fingerprint</i></a>

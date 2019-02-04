@@ -1,8 +1,9 @@
 <?php if (!defined('BASEPATH')) {
 	exit('No direct script access allowed');
 }
-
 require_once APPPATH . 'controllers/proktor/Home_proktor.php';
+require_once FCPATH . 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Alat extends Home_proktor{
 	function backup(){
@@ -19,6 +20,79 @@ class Alat extends Home_proktor{
   
   function unduh_template(){
     $this->load->view('proktor/alat/unduh_template.php');
+  }
+
+  function unggah_nilai_essay(){
+    $sql = "SELECT ujian_id, judul, DATE(mulai) as tgl 
+            FROM ujian ORDER BY judul";
+    $data['ujian'] = $this->db->query($sql)->result();
+    $this->load->view('proktor/alat/unggah_nilai_essay', $data);
+  }
+
+  function submit_unggah_nilai_essay() {
+    $ujian_id = $this->input->post('ujian_id');
+    $config['upload_path'] = './public/';
+    $config['allowed_types'] = 'xlsx';
+    $config['file_name'] = string_acak(10);
+    $this->load->library('upload', $config);
+    $this->upload->do_upload('file_nilai');
+    $file = $this->upload->data();
+    $file = $file['full_path'];
+
+    $spreadsheet = IOFactory::load($file);
+    $data = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+
+    $header = $data[6];
+    $no_soal = array();
+    $excl = array('A', 'B', 'C', 'D', 'E');
+    foreach($header as $k => $v){
+      if(!in_array($k, $excl)){
+        $no_soal[$k] = $v;
+      }
+    }
+
+    $nilai_essay = array();
+    foreach($data as $k => $v){
+      if($k > 6) {
+        foreach($no_soal as $k2 => $v2){
+          $nilai = array();
+          $nilai['ujian_id'] = $ujian_id;
+          $nilai['nis'] = $v['C'];
+          $nilai['login'] = $v['D'];
+          $nilai['no_soal'] = $v2;
+          $nilai['essay_skor'] = $v[$k2];
+          $nilai_essay[] = $nilai;
+        }
+      }
+    }    
+    
+    $jml_query = 0;
+    $sql = insert_or_update('peserta_jawaban', ['ujian_id', 'nis', 'login'], $nilai_essay);
+    $this->db->trans_start();
+    foreach ($sql as $key => $value) {
+      $nis = $nilai_essay[$key]['nis'];
+      $login = $nilai_essay[$key]['login'];
+      $sql2 = "SELECT COUNT(nis) AS jml FROM peserta
+                WHERE ujian_id = '$ujian_id' 
+                AND nis='$nis'
+                AND login = '$login'";
+      $r = $this->db->query($sql2)->row();
+      if($r->jml > 0){
+        $this->db->query($value);
+        $jml_query++;
+      }
+    }
+    $this->db->trans_complete();
+    $this->session->pesan = '
+    <div class="alert alert-info">
+      <strong>Sukses</strong>, sistem telah menyimpan '.$jml_query.' data.
+    </div>
+    ';
+		$this->session->mark_as_flash('pesan');
+		redirect('?d=proktor&c=alat&m=unggah_nilai_essay');
+    unlink($file);
+
+
   }
   
   function optimize(){
@@ -140,8 +214,5 @@ class Alat extends Home_proktor{
       echo "<script>document.location=href='?d=proktor&c=alat&m=restore'</script>";
 		}
 	}
-
-	
-
 	
 }

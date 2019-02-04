@@ -193,6 +193,9 @@ function is_active($th){
                             <li class="<?=css_class_active('unduh_template', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=unduh_template')?>" class=" waves-effect waves-block">Unduh Template</a>
                             </li>
+                            <li class="<?=css_class_active('unggah_nilai_essay', 'm')?>">
+                              <a href="<?=site_url('?d=proktor&c=alat&m=unggah_nilai_essay')?>" class=" waves-effect waves-block">Unggah Nilai Essay</a>
+                            </li>
                             <!-- <li class="<?=css_class_active('optimize', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=optimize')?>" class=" waves-effect waves-block">Optimasi Penyimpan</a>
                             </li>                        -->
