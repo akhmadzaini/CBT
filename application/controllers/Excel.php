@@ -22,15 +22,22 @@ class Excel extends CI_Controller {
 		// Masukkan data ujian
 		$sql = "INSERT INTO ujian (ujian_id, mulai, selesai, alokasi, jml_soal, acak)
 				VALUES ('$ujian_id', '$post[mulai]', '$selesai', $post[alokasi], $post[jml_soal], $post[acak])";
-		$this->db->query($sql);
+    $this->db->query($sql);
+    
+    // masukkan data ujian id
+    array_walk($peserta, function(&$item, $key) use ($ujian_id){
+      $item['ujian_id'] = $ujian_id;      
+    });
 
     // masukkan data peserta
-    $this->insert_or_update_peserta($peserta);
+    $q = $this->insert_or_update_peserta($peserta);
 
 		// Atur nilai kembalian pada console json
 		$hasil = array(
 			'pesan' => 'ok',
-			'ujian_id' => $ujian_id,
+      'ujian_id' => $ujian_id,
+      'peserta' => $post['peserta'],
+      'query' => $q,
 		);
 		json_output(200, $hasil);
 	}
@@ -86,10 +93,13 @@ class Excel extends CI_Controller {
     // generate sql replace
     $sql = insert_or_update('peserta', ['ujian_id', 'nis', 'login'], $peserta);
     $this->db->trans_start();
+    $rtr = "";
     foreach ($sql as $key => $value) {
       $this->db->query($value);
+      $rtr .= $value . ';             ';
     }
     $this->db->trans_complete();
+    return $rtr;
   }
 
 	function tarik_nilai(){
