@@ -139,9 +139,9 @@ class Excel extends CI_Controller {
 						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS nilai_essay_$no";
 		}
     $sql_add2 = implode(',', $sql_add2);
-
+    if (!empty($sql_add2)) $sql_add2 = ',' . $sql_add2 ;
 		
-		$sql = "SELECT a.nis, a.nama, a.nama_sekolah, a.status, a.last_login,	$sql_add, $sql_add2
+		$sql = "SELECT a.nis, a.nama, a.nama_sekolah, a.status, a.last_login,	$sql_add $sql_add2
 				FROM peserta a
         WHERE a.ujian_id = '$post[ujian_id]'
         ORDER BY a.nama_sekolah, a.kelas, a.server";
