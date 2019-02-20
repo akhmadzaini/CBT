@@ -157,12 +157,27 @@
       }
     });
 
-    $('body').on('keypress', function (e) {
+    $('body').on('keydown', function (e) {
+      // cek ABCD
       var key = String.fromCharCode(e.which).toUpperCase();
       var acceptedKey = ['A', 'B', 'C', 'D'];
       if(acceptedKey.includes(key)){
         vueApp.jawabPilihanGanda(key);
       }
+
+      // panah kanan
+      if(e.keyCode == 39){
+        $('#btn-next').trigger('click');
+      }
+      // panah kiri
+      if(e.keyCode == 37){
+        $('#btn-prev').trigger('click');
+      }
+
+      if(key == 'R'){
+        $('.btn-ragu').trigger('click');
+      }
+
     })
     
     // Klik Next
