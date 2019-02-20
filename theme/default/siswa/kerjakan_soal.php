@@ -156,6 +156,14 @@
         }
       }
     });
+
+    $('body').on('keypress', function (e) {
+      var key = String.fromCharCode(e.which).toUpperCase();
+      var acceptedKey = ['A', 'B', 'C', 'D'];
+      if(acceptedKey.includes(key)){
+        vueApp.jawabPilihanGanda(key);
+      }
+    })
     
     // Klik Next
     $('#btn-next').on('click', function(){
