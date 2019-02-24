@@ -178,6 +178,10 @@
         $('.btn-ragu').trigger('click');
       }
 
+      if(key == 'M'){
+        $('#summary-button').trigger('click');
+      }
+
     })
     
     // Klik Next

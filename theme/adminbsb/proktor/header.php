@@ -196,6 +196,10 @@ function is_active($th){
                             <li class="<?=css_class_active('unggah_nilai_essay', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=unggah_nilai_essay')?>" class=" waves-effect waves-block">Unggah Nilai Essay</a>
                             </li>
+                            </li>
+                            <li class="<?=css_class_active('cek_koneksi_inet', 'm')?>">
+                              <a href="<?=site_url('?d=proktor&c=alat&m=cek_koneksi_inet')?>" class=" waves-effect waves-block">Cek koneksi internet</a>
+                            </li>
                             <!-- <li class="<?=css_class_active('optimize', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=optimize')?>" class=" waves-effect waves-block">Optimasi Penyimpan</a>
                             </li>                        -->

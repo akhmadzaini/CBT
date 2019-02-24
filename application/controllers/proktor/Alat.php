@@ -216,6 +216,23 @@ class Alat extends Home_proktor{
 			$this->session->mark_as_flash('pesan');
       echo "<script>document.location=href='?d=proktor&c=alat&m=restore'</script>";
 		}
-	}
+  }
+  
+  function cek_koneksi_inet() {
+    $this->load->view('proktor/alat/cek_inet');
+  }
+
+  function do_cek_koneksi_inet() {
+    $connected = @fsockopen("www.google.com", 80); 
+    if ($connected){
+        $is_conn = true; //action when connected
+        fclose($connected);
+    }else{
+        $is_conn = false; //action in connection failure
+    }
+
+    $data = array('is_conn' => $is_conn);
+    json_output(200, $data);
+  }
 	
 }
