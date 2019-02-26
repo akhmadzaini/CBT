@@ -12,7 +12,9 @@ class Dashboard extends Home_proktor{
 		$data['jml_ujian_progres'] = $this->_jml_ujian('progres');
 
 		$data['ujian_progres'] = $this->_list_ujian('progres');
-		$data['ujian_lanjut'] = $this->_list_ujian('lanjut');
+    $data['ujian_lanjut'] = $this->_list_ujian('lanjut');
+    $data['acak'] = $this->_list_ujian('acak');
+	  $data['alokasi'] = $this->_list_ujian('alokasi');
 
 		$this->load->view('proktor/dashboard', $data);
 	}

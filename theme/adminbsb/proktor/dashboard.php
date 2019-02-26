@@ -1,3 +1,10 @@
+<?php
+$arr_acak = array(
+  0 => 'urut',
+  1 => 'acak soal saja',
+  2 => 'acak soal & jawaban'
+);
+?>
 <?php $this->load->view('proktor/header',array('refresh_time' => 60))?>
     <section class="content">
         <div class="container-fluid">
@@ -81,6 +88,8 @@
                                             <th>Nama Ujian</th>
                                             <th>Mulai</th>
                                             <th>Selesai</th>
+                                            <th>Acak</th>
+                                            <th>Waktu</th>
                                             <th>Jml. Peserta</th>
                                         </tr>
                                     </thead>
@@ -97,6 +106,8 @@
                                                 </td>
                                                 <td><?=mysqldate_to_str($ujian->mulai)?></td>
                                                 <td><?=mysqldate_to_str($ujian->selesai)?></td>
+                                                <td><?=$arr_acak[$ujian->acak]?></td>
+                                                <td><?=$ujian->alokasi?></td>
                                                 <td><?=$ujian->jml_peserta?></td>
                                             </tr>
                                         <?php endforeach?>
@@ -111,6 +122,8 @@
                                                 </td>
                                                 <td><?=mysqldate_to_str($ujian->mulai)?></td>
                                                 <td><?=mysqldate_to_str($ujian->selesai)?></td>
+                                                <td><?=$arr_acak[$ujian->acak]?></td>
+                                                <td><?=$ujian->alokasi?></td>
                                                 <td><?=$ujian->jml_peserta?></td>
                                             </tr>
                                         <?php endforeach?>
