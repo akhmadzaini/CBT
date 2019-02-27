@@ -8,24 +8,45 @@ class Sinkron extends CI_Controller {
     
     // cek apakah id server tersedia (jika id server terisi)
     $id_server = $this->input->post('id_server');
-    if($id_server != ''){
-      $this->db->where('server', $id_server);
-      $jml = $this->db->count_all_results('peserta');
-      if($jml == 0){
-        json_output(200, array('pesan' => 'server_gagal'));
-        die();
+    if($id_server != 'all'){
+      if($id_server != ''){
+        $this->db->where('server', $id_server);
+        $jml = $this->db->count_all_results('peserta');
+        if($jml == 0){
+          json_output(200, array('pesan' => 'server_gagal'));
+          die();
+        }
       }
     }
-
-		$token = string_acak(5);
-		$backup_dir = FCPATH . 'backup-' . $token;
-		mkdir($backup_dir);
+    
+    $token = string_acak(5);
+    $backup_dir = FCPATH . 'backup-' . $token;
+    mkdir($backup_dir);
     
     $data['ujian'] = $this->db->get('ujian')->result();
-		$data['soal'] = $this->db->get('soal')->result();
-		$data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
+    $data['soal'] = $this->db->get('soal')->result();
+    $data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
     if($id_server != '') $data['peserta'] = $this->db->get_where('peserta', array('server' => $id_server))->result();
-
+    if($id_server == 'all') $data['peserta'] = $this->db->get('peserta')->result();
+    
+    // if($id_server != ''){
+    //   $this->db->where('server', $id_server);
+    //   $jml = $this->db->count_all_results('peserta');
+    //   if($jml == 0){
+    //     json_output(200, array('pesan' => 'server_gagal'));
+    //     die();
+    //   }
+    // }
+    
+		// $token = string_acak(5);
+		// $backup_dir = FCPATH . 'backup-' . $token;
+		// mkdir($backup_dir);
+    
+    // $data['ujian'] = $this->db->get('ujian')->result();
+		// $data['soal'] = $this->db->get('soal')->result();
+		// $data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
+    // if($id_server != '') $data['peserta'] = $this->db->get_where('peserta', array('server' => $id_server))->result();
+    
 		$fp = fopen($backup_dir . '/data.json', 'w');
 		fwrite($fp, json_encode($data));
 		fclose($fp);
@@ -61,7 +82,7 @@ class Sinkron extends CI_Controller {
     $peserta = json_decode($this->input->post('peserta'));
     $peserta_jawaban = json_decode($this->input->post('peserta_jawaban'));
     $id_server = $this->input->post('id_server');
-
+    
     $jml_peserta = count($peserta); 
     $jml_peserta_jawaban = count($peserta_jawaban);
     
