@@ -67,8 +67,14 @@ class Cetak extends Home_proktor{
         $pdf->Image('./assets/kartu.jpg',105,$no*55+13,94,0,'JPG');
         $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),16,$no*55+16,11,0,'PNG');
         $pdf->Image(base_url('assets/') . get_app_config('LOGO_SEKOLAH'),111,$no*55+16,11,0,'PNG');
-        $pdf->Image('./assets/foto.png',18,$no*55+37,20,0,'PNG');
-        $pdf->Image('./assets/foto.png',113,$no*55+37,20,0,'PNG');
+        $file_foto = FCPATH . 'public/foto_siswa/' . $siswa[$nourut][4] . '.jpg';
+        if(file_exists($file_foto)){
+          $pdf->Image($file_foto,18,$no*55+37,20,0,'JPG');
+          $pdf->Image($file_foto,113,$no*55+37,20,0,'JPG');
+        }else{
+          $pdf->Image('./assets/foto.png',18,$no*55+37,20,0,'PNG');
+          $pdf->Image('./assets/foto.png',113,$no*55+37,20,0,'PNG');
+        }
         
         //$pdf->Image('./assets/logo_dinas.png',50,100,100,0,'PNG');
         $pdf -> SetY($no*55+16); 

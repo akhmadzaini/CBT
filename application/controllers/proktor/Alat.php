@@ -221,18 +221,47 @@ class Alat extends Home_proktor{
   function cek_koneksi_inet() {
     $this->load->view('proktor/alat/cek_inet');
   }
-
+  
   function do_cek_koneksi_inet() {
     $connected = @fsockopen("www.google.com", 80); 
     if ($connected){
-        $is_conn = true; //action when connected
-        fclose($connected);
+      $is_conn = true; //action when connected
+      fclose($connected);
     }else{
-        $is_conn = false; //action in connection failure
+      $is_conn = false; //action in connection failure
     }
-
+    
     $data = array('is_conn' => $is_conn);
     json_output(200, $data);
+  }
+  
+  function unggah_foto() {
+    $this->load->view('proktor/alat/unggah_foto');
+  }
+
+  function do_unggah_foto() {
+    // 1. unggah foto
+		$config['upload_path']          = './public/';
+		$config['allowed_types']        = 'zip';
+		$config['max_size']             = 1048576;
+		
+		$this->load->library('upload', $config);
+		
+		if (!$this->upload->do_upload('arsip')){
+			$pesan = $this->upload->display_errors("<div class=\"alert alert-danger\">", "</div>");
+			$this->session->pesan = $pesan;
+			$this->session->mark_as_flash('pesan');
+			redirect('?d=proktor&c=alat&m=unggah_foto');
+		}else{
+      $file_zip = $this->upload->data('full_path');
+      $dir_foto = FCPATH . 'public/foto_siswa/';
+      ekstrak_zip($file_zip, $dir_foto);
+      unlink($file_zip);
+      $pesan = "<div class=\"alert alert-success\">Arsip foto telah terunggah</div>";
+			$this->session->pesan = $pesan;
+			$this->session->mark_as_flash('pesan');
+			redirect('?d=proktor&c=alat&m=unggah_foto');
+    }
   }
 	
 }
