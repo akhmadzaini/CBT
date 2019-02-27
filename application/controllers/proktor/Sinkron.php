@@ -11,6 +11,7 @@ class Sinkron extends Home_proktor{
   function __construct(){
     parent::__construct();
     $this->token = 'kEXCZ9KjumHxTO8dsVyg';
+    ini_set('memory_limit', '512M');
   }
   
   function tarik(){
