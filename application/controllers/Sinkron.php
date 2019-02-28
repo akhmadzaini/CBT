@@ -86,7 +86,22 @@ class Sinkron extends CI_Controller {
     $jml_peserta = count($peserta); 
     $jml_peserta_jawaban = count($peserta_jawaban);
     
-		if($jml_peserta > 0){
+    // kirim jawaban dulu ke client
+    ob_start();
+    echo json_encode(['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban]);
+    header('Content-Length: ' . ob_get_length());
+    header('Content-Type: application/json');
+    header('Connection: close');
+    ob_end_flush();
+    ob_flush();
+    flush();
+
+    // close current session
+    if (session_id()) session_write_close();
+
+    // proses ini dikerjakan di bagian background
+    $this->db->trans_start();
+    if($jml_peserta > 0){
       $pecahan_peserta = array_chunk($peserta, 100);
       foreach($pecahan_peserta as $pecahan){
         $this->db->query(replace_batch('peserta', $pecahan));
@@ -97,8 +112,9 @@ class Sinkron extends CI_Controller {
       foreach($pecahan_peserta_jawaban as $pecahan){
         $this->db->query(replace_batch('peserta_jawaban', $pecahan));
       }
-		}
-		json_output(200, ['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban]);
+    }
+    $this->db->trans_complete();
+
 	}
   
 	private function __cek_token(){
