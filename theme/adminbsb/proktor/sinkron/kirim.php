@@ -39,8 +39,33 @@
                   <input type="text" class="form-control" name="id_server" placeholder="ID pada server lokal, misal : smp1" value=""" required="">
                 </div>
               </div>
-              <button type="submit" class="btn btn-primary waves-effect btn-sinkron">KIRIM</button>	
+              <!-- <button type="submit" class="btn btn-primary waves-effect btn-sinkron">KIRIM</button>	 -->
             </form>
+
+            <table class="table table-hover">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>ID ujian</th>
+									<th>Nama ujian</th>
+									<th>Tgl Ujian</th>
+									<th>Tindakan</th>
+								</tr>
+							</thead>
+							<?php $n=1?>
+							<tbody>
+								<?php foreach($ujian as $r):?>
+									<tr>
+										<td><?=$n++?></td>
+										<td><?=$r->ujian_id?></td>
+										<td><?=$r->judul?></td>
+										<td><?=$r->mulai?></td>
+										<td><a href="javascript:void(0);" class="btn btn-xs btn-primary btn-kirim" data-ujian_id="<?=$r->ujian_id?>">kirim nilai</a></td>
+									</tr>
+								<?php endforeach?>
+								<tr></tr>
+							</tbody>
+            </table>
             
           </div>
         </div>
@@ -53,7 +78,16 @@
 
 <script>
   $(function(){
-    $('#frm-sinkron').on('submit', function(evt){
+    $('.btn-kirim').on('click', function(evt){
+			// collect data
+			var ujian_id = $(this).data('ujian_id');
+			var server_remote = $('[name="server_remote"]').val();
+			var id_server = $('[name="id_server"]').val();
+			if(server_remote.length === 0 || !server_remote.trim() || id_server.length === 0 || !id_server.trim()){
+				swal('Alamat server remote dan ID server lokal harus terisi');
+				return;
+			}
+
       evt.preventDefault();
       var frm = $(this);
       swal({
@@ -67,11 +101,18 @@
         closeOnConfirm: true                
       },function(tindas){
         var target = '<?=site_url("?d=proktor&c=sinkron&m=do_kirim")?>';
-        var data = frm.serialize();
+        var data = {
+					'ujian_id' : ujian_id,
+					'server_remote' : server_remote,
+					'id_server' : id_server,
+				};
+
         $('.loader').waitMe();
         $.post(target, data, function(hasil){
+					console.log(hasil);
           $('.loader').waitMe('hide');
-          swal(hasil.rincian.peserta + ' data peserta dan ' + hasil.rincian.peserta_jawaban + ' data jawaban peserta telah terkirim');
+          // swal(hasil.rincian.peserta + ' data peserta dan ' + hasil.rincian.peserta_jawaban + ' data jawaban peserta telah terkirim');
+          // swal('data jawaban peserta dalam proses pengiriman ke pusat, mohon tidak mematikan sistem atau logout');
         });
       });
       

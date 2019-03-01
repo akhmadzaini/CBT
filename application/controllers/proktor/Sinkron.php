@@ -97,10 +97,14 @@ class Sinkron extends Home_proktor{
   }
   
   function kirim(){
-    $this->load->view('proktor/sinkron/kirim');
+    $sql = "SELECT * FROM ujian WHERE status_soal <> 0";
+    $data['ujian'] = $this->db->query($sql)->result();
+    $this->load->view('proktor/sinkron/kirim', $data);
   }
   
   function do_kirim(){
+    set_time_limit(0);
+
     $post = $this->input->post();
     $target = $post['server_remote'] . '/index.php?c=sinkron&m=terima_nilai';
     $sql_jawaban = "SELECT a.*
@@ -109,15 +113,20 @@ class Sinkron extends Home_proktor{
     ON a.ujian_id = b.ujian_id
     AND a.nis = b.nis
     AND a.login = b.login
-    WHERE b.server  = '$post[id_server]'";
-    log_message('custom', $sql_jawaban);
+    WHERE b.server  = '$post[id_server]'
+    AND b.ujian_id = '$post[ujian_id]'";
+
+    $data_peserta = json_encode($this->db->get_where('peserta', array('server' => $post['id_server']))->result());
+    $data_peserta_jawaban = json_encode($this->db->query($sql_jawaban)->result());
+
     $data = [
       'token' => $this->token,
       'id_server' => $post['id_server'],
-      'peserta' => json_encode($this->db->get_where('peserta', array('server' => $post['id_server']))->result()),
-      'peserta_jawaban' => json_encode($this->db->query($sql_jawaban)->result()),
+      'peserta' => $data_peserta,
+      'peserta_jawaban' => $data_peserta_jawaban,
     ];
-    
+
+
     // kirim request ke server remote
     $curl = new Curl();
     $curl->post($target, $data);
@@ -128,6 +137,7 @@ class Sinkron extends Home_proktor{
     }else{
       json_output(200, array('pesan' => 'konek_gagal', 'resp' => $curl->getHttpStatusCode()));
     }
+
   }
   
 }

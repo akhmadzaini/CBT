@@ -79,25 +79,26 @@ class Sinkron extends CI_Controller {
 	function terima_nilai(){
     ini_set('max_execution_time', 0);
     $this->__cek_token();
-    $peserta = json_decode($this->input->post('peserta'));
-    $peserta_jawaban = json_decode($this->input->post('peserta_jawaban'));
+    $data_peserta = $this->input->post('peserta');
+    $data_peserta_jawaban = $this->input->post('peserta_jawaban');
+    // log_message('custom', $data_peserta_jawaban);
+    $peserta = json_decode($data_peserta);
+    $peserta_jawaban = json_decode($data_peserta_jawaban);
     $id_server = $this->input->post('id_server');
     
     $jml_peserta = count($peserta); 
     $jml_peserta_jawaban = count($peserta_jawaban);
-    
-    // kirim jawaban dulu ke client
-    ob_start();
-    echo json_encode(['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban]);
-    header('Content-Length: ' . ob_get_length());
-    header('Content-Type: application/json');
-    header('Connection: close');
-    ob_end_flush();
-    ob_flush();
-    flush();
+    $data_ = ['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban];
 
-    // close current session
-    if (session_id()) session_write_close();
+    set_time_limit(0);
+    ob_end_clean();
+    ignore_user_abort(true);
+    ob_start();
+    json_output(200, $data_);
+    $size = ob_get_length();
+    header("Content-Length: $size");
+    ob_end_flush();
+    flush();
 
     // proses ini dikerjakan di bagian background
     $this->db->trans_start();
@@ -114,6 +115,7 @@ class Sinkron extends CI_Controller {
       }
     }
     $this->db->trans_complete();
+    exit();
 
 	}
   
