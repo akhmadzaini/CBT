@@ -100,6 +100,7 @@
         cancelButtonText: "Tidak",
         closeOnConfirm: true                
       },function(tindas){
+				if(!tindas){return;}
         var target = '<?=site_url("?d=proktor&c=sinkron&m=do_kirim")?>';
         var data = {
 					'ujian_id' : ujian_id,
@@ -109,10 +110,8 @@
 
         $('.loader').waitMe();
         $.post(target, data, function(hasil){
-					console.log(hasil);
           $('.loader').waitMe('hide');
-          // swal(hasil.rincian.peserta + ' data peserta dan ' + hasil.rincian.peserta_jawaban + ' data jawaban peserta telah terkirim');
-          // swal('data jawaban peserta dalam proses pengiriman ke pusat, mohon tidak mematikan sistem atau logout');
+          swal(hasil.rincian.peserta + ' data peserta dan ' + hasil.rincian.peserta_jawaban + ' data jawaban peserta telah terkirim');
         });
       });
       

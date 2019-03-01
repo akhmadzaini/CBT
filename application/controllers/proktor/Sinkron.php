@@ -106,7 +106,7 @@ class Sinkron extends Home_proktor{
     set_time_limit(0);
 
     $post = $this->input->post();
-    $target = $post['server_remote'] . '/index.php?c=sinkron&m=terima_nilai';
+    $target = $post['server_remote'] . '/index.php?c=sinkron&m=terima_nilai_gz';
     $sql_jawaban = "SELECT a.*
     FROM peserta_jawaban a
     LEFT JOIN peserta b 
@@ -116,8 +116,10 @@ class Sinkron extends Home_proktor{
     WHERE b.server  = '$post[id_server]'
     AND b.ujian_id = '$post[ujian_id]'";
 
-    $data_peserta = json_encode($this->db->get_where('peserta', array('server' => $post['id_server']))->result());
+    $data_peserta = json_encode($this->db->get_where('peserta', array('server' => $post['id_server'], 'ujian_id' => $post['ujian_id']))->result());
     $data_peserta_jawaban = json_encode($this->db->query($sql_jawaban)->result());
+    $data_peserta = base64_encode(gzdeflate($data_peserta));
+    $data_peserta_jawaban = base64_encode(gzdeflate($data_peserta_jawaban));
 
     $data = [
       'token' => $this->token,
@@ -133,7 +135,7 @@ class Sinkron extends Home_proktor{
     if($curl->getHttpStatusCode() == 200){
       $r = $curl->response;
       json_output(200, ['pesan'           => 'ok', 
-                        'rincian'        => $r]);
+                        'rincian'        => json_decode($r)]);
     }else{
       json_output(200, array('pesan' => 'konek_gagal', 'resp' => $curl->getHttpStatusCode()));
     }

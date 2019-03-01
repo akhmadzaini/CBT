@@ -117,6 +117,49 @@ class Sinkron extends CI_Controller {
     $this->db->trans_complete();
     exit();
 
+  }
+  
+	function terima_nilai_gz(){
+    ini_set('max_execution_time', 0);
+    $this->__cek_token();
+    $data_peserta = gzinflate(base64_decode($this->input->post('peserta')));
+    $data_peserta_jawaban = gzinflate(base64_decode($this->input->post('peserta_jawaban')));
+    // log_message('custom', $data_peserta_jawaban);
+    $peserta = json_decode($data_peserta);
+    $peserta_jawaban = json_decode($data_peserta_jawaban);
+    $id_server = $this->input->post('id_server');
+    
+    $jml_peserta = count($peserta); 
+    $jml_peserta_jawaban = count($peserta_jawaban);
+    $data_ = ['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban];
+
+    set_time_limit(0);
+    ob_end_clean();
+    ignore_user_abort(true);
+    ob_start();
+    json_output(200, $data_);
+    $size = ob_get_length();
+    header("Content-Length: $size");
+    ob_end_flush();
+    flush();
+
+    // proses ini dikerjakan di bagian background
+    $this->db->trans_start();
+    if($jml_peserta > 0){
+      $pecahan_peserta = array_chunk($peserta, 100);
+      foreach($pecahan_peserta as $pecahan){
+        $this->db->query(replace_batch('peserta', $pecahan));
+      }        
+    }
+    if($jml_peserta_jawaban > 0){
+      $pecahan_peserta_jawaban = array_chunk($peserta_jawaban, 100);
+      foreach($pecahan_peserta_jawaban as $pecahan){
+        $this->db->query(replace_batch('peserta_jawaban', $pecahan));
+      }
+    }
+    $this->db->trans_complete();
+    exit();
+
 	}
   
 	private function __cek_token(){
