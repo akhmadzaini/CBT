@@ -55,6 +55,13 @@ class Ujian extends Home_siswa{
 			$this->session->pesan = 'token_gagal';
 			$this->session->mark_as_flash('pesan');
 		}else{		
+      // menyimpan last_login
+      $this->db->set('last_login', 'NOW()', FALSE);
+      $this->db->where('login', $this->session->login);
+      $this->db->where('ujian_id', $this->session->ujian_id);
+      $this->db->where('last_login IS NULL');
+      $this->db->update('peserta');
+        
 			// update data peserta, ubah status menjadi sedang ujian (2)
 			$this->db->where('ujian_id', $this->session->ujian_id);
 			$this->db->where('nis', $this->session->nis);
