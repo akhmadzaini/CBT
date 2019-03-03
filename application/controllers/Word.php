@@ -149,15 +149,18 @@ class Word extends CI_Controller {
 			mkdir($abs_dir, 0775, true);
 		}
     
-		// $filename = substr($filename, (strrpos($filename, "/") ? strrpos($filename, "/") + 1 : 0));
-		if (write_file($abs_dir . $filename, $file['bits'])) {
-      log_message('custom', 'menulis : ' . $filename);
+    // $filename = substr($filename, (strrpos($filename, "/") ? strrpos($filename, "/") + 1 : 0));
+    $abs_path = $abs_dir . $filename;
+		if (write_file($abs_path, $file['bits'])) {
+      $new_file = compress_image($abs_path, 50);
+      log_message('custom', 'menulis : ' . $new_file);
+      $info = pathinfo($new_file);
 			$response = array(
 				array(
-					'url' => array($rel_dir . $filename, 'string')
+					'url' => array($rel_dir . $info['basename'], 'string')
 				), 'struct'
       );
-      $this->__tambah_tmp_gbr($abs_dir . $filename);
+      $this->__tambah_tmp_gbr($new_file);
 			return $this->xmlrpc->send_response($response);
 		}
     return $this->xmlrpc->send_error_message('2', 'File Failed to Write');
