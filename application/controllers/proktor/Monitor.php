@@ -41,7 +41,12 @@ class Monitor extends Home_proktor{
 
 		$ujian_id = $this->input->get('ujian_id');
 		$data['peserta'] = array();
-		$data['ujian_id'] = $ujian_id;
+    $data['ujian_id'] = $ujian_id;
+    
+    // data nama sekolah
+    $sql = "SELECT DISTINCT nama_sekolah FROM peserta ORDER BY nama_sekolah";
+    $data['nama_sekolah'] = $this->db->query($sql)->result();
+
 		$this->load->view('proktor/monitor/peserta', $data);
 	}
 
@@ -103,6 +108,7 @@ class Monitor extends Home_proktor{
     $this->db->set('login', $post['login']);
     $this->db->set('password', $post['password']);
     $this->db->set('nama', $post['nama']);
+    $this->db->set('nama_sekolah', $post['nama_sekolah']);
     $this->db->set('server', $post['server']);
     $this->db->set('kelas', $post['kelas']);
     $this->db->set('sesi', $post['sesi']);

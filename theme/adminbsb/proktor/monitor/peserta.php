@@ -128,6 +128,16 @@
                         <input type="password" class="form-control" name="password" placeholder="Kata sandi" value="" required="">
                       </div>
                   </div>
+                  <label>Sekolah</label>
+                  <div class="form-group">
+                      <div class="form-line">
+                        <select name="nama_sekolah" class="form-control" data-live-search="true">
+                        <?php foreach($nama_sekolah as $r):?>
+                          <option value="<?=$r->nama_sekolah?>"><?=$r->nama_sekolah?></option>
+                        <?php endforeach?>
+                        </select>
+                      </div>
+                  </div>
                   <label>Server</label>
                   <div class="form-group">
                       <div class="form-line">
