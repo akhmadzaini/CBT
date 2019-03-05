@@ -200,6 +200,9 @@ function is_active($th){
                             <li class="<?=css_class_active('cek_koneksi_inet', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=cek_koneksi_inet')?>" class=" waves-effect waves-block">Cek koneksi internet</a>
                             </li>
+                            <li class="<?=css_class_active('jam_sistem', 'm')?>">
+                              <a href="<?=site_url('?d=proktor&c=alat&m=jam_sistem')?>" class=" waves-effect waves-block">Jam sistem</a>
+                            </li>
                             <li class="<?=css_class_active('unggah_foto', 'm')?>">
                               <a href="<?=site_url('?d=proktor&c=alat&m=unggah_foto')?>" class=" waves-effect waves-block">Unggah foto siswa</a>
                             </li>

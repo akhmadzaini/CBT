@@ -263,5 +263,9 @@ class Alat extends Home_proktor{
 			redirect('?d=proktor&c=alat&m=unggah_foto');
     }
   }
+
+  function jam_sistem() {
+    $this->load->view('proktor/alat/jam_sistem');
+  }
 	
 }
