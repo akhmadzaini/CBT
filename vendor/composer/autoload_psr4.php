@@ -11,4 +11,5 @@ return array(
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),
     'Curl\\' => array($vendorDir . '/php-curl-class/php-curl-class/src/Curl'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
+    'Bt51\\NTP\\' => array($vendorDir . '/bt51/ntp/src'),
 );

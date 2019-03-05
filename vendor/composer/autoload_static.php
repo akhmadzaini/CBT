@@ -82,6 +82,10 @@ class ComposerStaticInit64f3c94930a29f98ed2a7dc4f6c2aae5
             'Curl\\' => 5,
             'Complex\\' => 8,
         ),
+        'B' => 
+        array (
+            'Bt51\\NTP\\' => 9,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -104,6 +108,10 @@ class ComposerStaticInit64f3c94930a29f98ed2a7dc4f6c2aae5
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
+        'Bt51\\NTP\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bt51/ntp/src',
         ),
     );
 

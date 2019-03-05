@@ -4,6 +4,8 @@
 require_once APPPATH . 'controllers/proktor/Home_proktor.php';
 require_once FCPATH . 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Bt51\NTP\Socket;
+use Bt51\NTP\Client;
 
 class Alat extends Home_proktor{
 	function backup(){
@@ -265,7 +267,11 @@ class Alat extends Home_proktor{
   }
 
   function jam_sistem() {
-    $this->load->view('proktor/alat/jam_sistem');
+    $socket = new Socket('0.id.pool.ntp.org', 123); 
+    $ntp = new Client($socket);
+    $date = $ntp->getTime();
+    $data['ntp_time'] = $date->setTimezone(new DateTimeZone('Asia/Jakarta'));
+    $this->load->view('proktor/alat/jam_sistem', $data);
   }
 	
 }
