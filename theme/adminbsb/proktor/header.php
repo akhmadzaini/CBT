@@ -210,7 +210,21 @@ function is_active($th){
                               <a href="<?=site_url('?d=proktor&c=alat&m=optimize')?>" class=" waves-effect waves-block">Optimasi Penyimpan</a>
                             </li>                        -->
                         </ul>
-                    </li>                    
+                    </li> 
+                    <li class="<?=css_class_active('log')?>">
+                      <a href="javascript:void(0)" class="menu-toggle waves-effect waves-block">
+                          <i class="material-icons">bug_report</i>
+                          <span>Log Server</span>
+                      </a>
+                      <ul class="ml-menu">
+                        <li class="<?=css_class_active('server_tarik', 'm')?>">
+                          <a href="<?=site_url('?d=proktor&c=log&m=sync_tarik')?>" class=" waves-effect waves-block">Sync. Tarik</a>
+                        </li>  
+                        <li class="<?=css_class_active('server_kirim', 'm')?>">
+                          <a href="<?=site_url('?d=proktor&c=log&m=sync_kirim')?>" class=" waves-effect waves-block">Sync. Kirim</a>
+                        </li>  
+                      </ul>
+                    </li>                   
                     <li class="<?=css_class_active('profil')?>">
                         <a href="<?=site_url('?d=proktor&c=profil&m=edit')?>" class="waves-effect waves-block">
                             <i class="material-icons">person</i>

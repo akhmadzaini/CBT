@@ -55,15 +55,17 @@ class Sinkron extends Home_proktor{
         $nama_sinkron = FCPATH . 'public/sinkron_' . $r->nama_zip;
         myob('<p>Sedang mengunduh, mohon tunggu, proses ini memerlukan waktu, bergantung dari koneksi... '. $r->nama_zip .' </p>');
         file_put_contents($nama_sinkron, fopen($full_path_zip, 'r'));
+
         myob('<p>Mengekstrak data sinkron ...</p>');
-        $this->__do_restore($nama_sinkron);
+        $this->__do_restore($nama_sinkron, $r->id_log);
+
       }
     }else{
       myob('<p>Koneksi dengan server remote gagal</p>');
     }
   }
   
-  private function __do_restore($fullpath_arsip_sinkron){
+  private function __do_restore($fullpath_arsip_sinkron, $id_log){
     $post = $this->input->post();
 
     // 1. Reset data
@@ -90,7 +92,12 @@ class Sinkron extends Home_proktor{
     unlink($fullpath_arsip_sinkron);
     rrmdir($ekstrak_path);
 
-    myob('<p>Proses backup telah selesai</p>');
+    myob('<p>Proses backup telah selesai log : '. $id_log .'</p>');
+    // catat log sukses di server
+    $curl = new Curl();
+    $data = ['token' => $this->token, 'id_log' => $id_log];
+    $curl->post($post['server_remote'] . '/index.php?c=sinkron&m=log_tarik_sukses', $data);
+
     sleep(3);
     echo '<script>document.location.href="?d=proktor&c=sinkron&m=tarik"</script>';
 
@@ -124,6 +131,7 @@ class Sinkron extends Home_proktor{
     $data = [
       'token' => $this->token,
       'id_server' => $post['id_server'],
+      'ujian_id' => $post['ujian_id'],
       'peserta' => $data_peserta,
       'peserta_jawaban' => $data_peserta_jawaban,
     ];

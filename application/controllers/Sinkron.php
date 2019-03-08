@@ -4,7 +4,7 @@ if (!defined('BASEPATH')) {	exit('No direct script access allowed'); }
 class Sinkron extends CI_Controller {    
 	
   function tarik(){
-		$this->__cek_token();
+    $this->__cek_token();
     
     // cek apakah id server tersedia (jika id server terisi)
     $id_server = $this->input->post('id_server');
@@ -18,6 +18,15 @@ class Sinkron extends CI_Controller {
         }
       }
     }
+
+    // mulai catat log
+    $id_log = string_acak(10);
+    $ip = $this->input->ip_address();
+    $db_log = $this->load->database('log', TRUE);
+    $db_log->set('id', $id_log);
+    $db_log->set('ip', $ip);
+    $db_log->set('id_server', $id_server);
+    $db_log->set('mulai', time());
     
     $token = string_acak(5);
     $backup_dir = FCPATH . 'backup-' . $token;
@@ -28,24 +37,6 @@ class Sinkron extends CI_Controller {
     $data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
     if($id_server != '') $data['peserta'] = $this->db->get_where('peserta', array('server' => $id_server))->result();
     if($id_server == 'all') $data['peserta'] = $this->db->get('peserta')->result();
-    
-    // if($id_server != ''){
-    //   $this->db->where('server', $id_server);
-    //   $jml = $this->db->count_all_results('peserta');
-    //   if($jml == 0){
-    //     json_output(200, array('pesan' => 'server_gagal'));
-    //     die();
-    //   }
-    // }
-    
-		// $token = string_acak(5);
-		// $backup_dir = FCPATH . 'backup-' . $token;
-		// mkdir($backup_dir);
-    
-    // $data['ujian'] = $this->db->get('ujian')->result();
-		// $data['soal'] = $this->db->get('soal')->result();
-		// $data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
-    // if($id_server != '') $data['peserta'] = $this->db->get_where('peserta', array('server' => $id_server))->result();
     
 		$fp = fopen($backup_dir . '/data.json', 'w');
 		fwrite($fp, json_encode($data));
@@ -58,11 +49,19 @@ class Sinkron extends CI_Controller {
 		// arsipkan folder backup
 		$zip_file = './public/backup_CBT_' . date('d-m-Y') . '_' . $token . '.zip';
 		arsipkan_folder($backup_dir, $zip_file);
-		rrmdir($backup_dir);
-		json_output(200, array('pesan'=>'ok', 'nama_zip' => 'backup_CBT_' . date('d-m-Y') . '_' . $token . '.zip'));
+    rrmdir($backup_dir);
+    $nama_zip = 'backup_CBT_' . date('d-m-Y') . '_' . $token . '.zip';
+
+    // catat log dulu sebelum return
+    $db_log->set('zip_file', $nama_zip);
+    $db_log->set('selesai_zip', time());
+    $db_log->insert('sinkron_server_tarik');
+    
+		json_output(200, array('pesan'=>'ok', 'nama_zip' => $nama_zip, 'id_log' => $id_log));
 	}
 	
 	function tarik_zip(){
+    // unduh zip
 		$zip_file = FCPATH . 'public/' . $this->input->get('zip');
 		header('Content-Description: File Transfer');
 		header('Content-Type: application/zip');
@@ -73,22 +72,41 @@ class Sinkron extends CI_Controller {
 		header('Pragma: public');
 		header('Content-Length: ' . filesize($zip_file));
 		readfile($zip_file);
-		unlink($zip_file);
-	}
+    unlink($zip_file);
+  }
+  
+  function log_tarik_sukses() {
+    $id_log = $this->input->post('id_log');
+    $db_log = $this->load->database('log', TRUE);
+    $db_log->set('selesai', time());
+    $db_log->where('id', $id_log);
+    $db_log->update('sinkron_server_tarik');
+  }
   
 	function terima_nilai(){
     ini_set('max_execution_time', 0);
     $this->__cek_token();
     $data_peserta = $this->input->post('peserta');
     $data_peserta_jawaban = $this->input->post('peserta_jawaban');
-    // log_message('custom', $data_peserta_jawaban);
     $peserta = json_decode($data_peserta);
     $peserta_jawaban = json_decode($data_peserta_jawaban);
     $id_server = $this->input->post('id_server');
+    $ujian_id = $this->input->post('ujian_id');
     
     $jml_peserta = count($peserta); 
     $jml_peserta_jawaban = count($peserta_jawaban);
     $data_ = ['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban];
+
+    // catat log kirim
+    $db_log = $this->load->database('log', TRUE);
+    $id_log = string_acak(10);
+    $ip = $this->input->ip_address();
+    $db_log->set('id', $id_log);
+    $db_log->set('ip', $ip);
+    $db_log->set('ujian_id', $ujian_id);
+    $db_log->set('id_server', $id_server);
+    $db_log->set('mulai', time());
+    $db_log->insert('sinkron_server_kirim');
 
     set_time_limit(0);
     ob_end_clean();
@@ -115,6 +133,12 @@ class Sinkron extends CI_Controller {
       }
     }
     $this->db->trans_complete();
+
+    // catat log selesai
+    $db_log->set('selesai', time());
+    $db_log->where('id', $id_log);
+    $db_log->update('sinkron_server_kirim');
+
     exit();
 
   }
@@ -128,10 +152,22 @@ class Sinkron extends CI_Controller {
     $peserta = json_decode($data_peserta);
     $peserta_jawaban = json_decode($data_peserta_jawaban);
     $id_server = $this->input->post('id_server');
+    $ujian_id = $this->input->post('ujian_id');
     
     $jml_peserta = count($peserta); 
     $jml_peserta_jawaban = count($peserta_jawaban);
     $data_ = ['peserta' => $jml_peserta, 'peserta_jawaban' => $jml_peserta_jawaban];
+
+    // catat log kirim
+    $db_log = $this->load->database('log', TRUE);
+    $id_log = string_acak(10);
+    $ip = $this->input->ip_address();
+    $db_log->set('id', $id_log);
+    $db_log->set('ip', $ip);
+    $db_log->set('ujian_id', $ujian_id);
+    $db_log->set('id_server', $id_server);
+    $db_log->set('mulai', time());
+    $db_log->insert('sinkron_server_kirim');
 
     set_time_limit(0);
     ob_end_clean();
@@ -158,6 +194,12 @@ class Sinkron extends CI_Controller {
       }
     }
     $this->db->trans_complete();
+
+    // catat log selesai kirim
+    $db_log->set('selesai', time());
+    $db_log->where('id', $id_log);
+    $db_log->update('sinkron_server_kirim');
+
     exit();
 
 	}
