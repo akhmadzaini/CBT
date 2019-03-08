@@ -26,7 +26,7 @@ class Cetak extends Home_proktor{
     $data['ujian'] = $this->db->query($sql)->result();
     
     // ambil data pengelompokan
-    $sql = "SELECT DISTINCT kelas FROM peserta 
+    $sql = "SELECT DISTINCT kelas,nama_sekolah FROM peserta 
     ORDER BY  kelas ASC";
     $data['kelompok'] = $this->db->query($sql)->result();
 
@@ -417,11 +417,12 @@ class Cetak extends Home_proktor{
     }
 
     // Atur nama-nama siswa
-    $sql = "SELECT nis, login, nama
-            FROM peserta 
-            WHERE ujian_id = '$ujian_id'
-            AND kelas = '$kelas'
-            ORDER BY nis";
+    $sql = "SELECT a.nis, a.login, a.nama, a.nama_sekolah, b.judul
+            FROM peserta a
+            LEFT JOIN ujian b ON a.ujian_id = b.ujian_id
+            WHERE a.ujian_id = '$ujian_id'
+            AND a.kelas = '$kelas'
+            ORDER BY a.nis";
     $data = $this->db->query($sql)->result();
     $baris = 7;
     foreach($data as $r){
@@ -430,6 +431,8 @@ class Cetak extends Home_proktor{
       ->setCellValueByColumnAndRow(3, $baris, $r->nis)
       ->setCellValueByColumnAndRow(4, $baris, strtoupper($r->login))
       ->setCellValueByColumnAndRow(5, $baris++, strtoupper($r->nama));
+      $nama_sekolah=strtoupper($r->nama_sekolah);
+      $judul=strtoupper($r->judul);
     }
 
     // Atur lebar kolom
@@ -440,7 +443,7 @@ class Cetak extends Home_proktor{
 
     // Redirect output to a client’s web browser (Xlsx)
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="nilai_essay.xlsx"');
+    header('Content-Disposition: attachment;filename="'.$nama_sekolah.'""'.$judul.'"essay.xlsx"');
     header('Cache-Control: max-age=0');
     // If you're serving to IE 9, then the following may be needed
     header('Cache-Control: max-age=1');

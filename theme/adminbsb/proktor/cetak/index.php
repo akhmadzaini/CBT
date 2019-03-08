@@ -67,6 +67,7 @@
             <tr>
               <th>#</th>
               <th>Kelas</th>
+              <th>Sekolah</th>
               <th>Cetak</th>
             </tr>
           </thead>
@@ -84,6 +85,7 @@
             <tr>
               <td><?=$n++?></td>
               <td><?=$r->kelas?></td>
+              <td><?=$r->nama_sekolah?></td>
               <td>
                 <a href="javascript:void(0)" class="btn-cetak-detail" data-url="" data-kelas="<?=$r->kelas?>">
                   <i class="material-icons">print</i>
