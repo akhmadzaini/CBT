@@ -127,7 +127,7 @@ class Alat extends Home_proktor{
   }
 	
 	function do_backup(){
-    ini_set('memory_limit','256M');
+    ini_set('memory_limit','1024M');
     ini_set('max_execution_time', 0);
 
 		// buat direktori backup
@@ -135,13 +135,43 @@ class Alat extends Home_proktor{
 		$backup_dir = FCPATH . 'backup-' . $token;
 		mkdir($backup_dir);
 		
-		// buat json yg berisi db 
-		$data['ujian'] = $this->db->get('ujian')->result();
-		$data['soal'] = $this->db->get('soal')->result();
-		$data['pilihan_jawaban'] = $this->db->get('pilihan_jawaban')->result();
-		$data['peserta'] = $this->db->get('peserta')->result();
-		$data['peserta_jawaban'] = $this->db->get('peserta_jawaban')->result();
-		
+    // buat json yg berisi db 
+    // buffer table ujian
+    $query = $this->db->get('ujian');
+    $tmp = array();
+    while ($row = $query->unbuffered_row()){
+      $tmp[] = $row;
+    }
+    $data['ujian'] = $tmp;
+    // buffer table soal
+    $query = $this->db->get('soal');
+    $tmp = array();
+    while ($row = $query->unbuffered_row()){
+      $tmp[] = $row;
+    }
+    $data['soal'] = $tmp;
+    // buffer table pilihan_jawaban
+    $query = $this->db->get('pilihan_jawaban');
+    $tmp = array();
+    while ($row = $query->unbuffered_row()){
+      $tmp[] = $row;
+    }
+    $data['pilihan_jawaban'] = $tmp;
+    // buffer table peserta
+    $query = $this->db->get('peserta');
+    $tmp = array();
+    while ($row = $query->unbuffered_row()){
+      $tmp[] = $row;
+    }
+    $data['peserta'] = $tmp;
+    // buffer table peserta_jawaban
+    $query = $this->db->get('peserta_jawaban');
+    $tmp = array();
+    while ($row = $query->unbuffered_row()){
+      $tmp[] = $row;
+    }
+    $data['peserta_jawaban'] = $tmp;
+
 		// backup db json ke file
 		$fp = fopen($backup_dir . '/data.json', 'w');
 		fwrite($fp, json_encode($data));
