@@ -25,6 +25,9 @@
           </h2>
         </div>
         <div class="body">
+          <p>
+            <a href="?d=proktor&c=log&m=del_sync_kirim" class="btn btn-primary waves-effect">Bersihkan log</a>
+          </p>
           <table class="table table-hover">
             <thead>
               <tr>
