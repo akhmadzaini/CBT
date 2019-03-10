@@ -154,7 +154,7 @@ class Excel extends CI_Controller {
 		$sql = "SELECT a.nis, a.nama, a.nama_sekolah, a.status, a.last_login,	$sql_add $sql_add2
 				FROM peserta a
         WHERE a.ujian_id = '$post[ujian_id]'
-        ORDER BY a.nama_sekolah, a.kelas, a.server";
+        ORDER BY a.nama_sekolah, a.kelas, a.server, a.login";
         
 		$data = array(
       'pesan' => 'ok' , 
