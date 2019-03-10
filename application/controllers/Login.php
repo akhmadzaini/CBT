@@ -22,6 +22,14 @@ class Login extends CI_Controller{
 		}else{
 			redirect('?d=proktor&c=dashboard');
 		}
+  }
+  
+	function login_bank(){
+		if((empty($this->session->login)) || ($this->session->akses != 'bank')){
+			$this->load->view('bank/login');
+		}else{
+			redirect('?d=bank&c=ujian');
+		}
 	}
 
 	function submit_login_proktor(){
@@ -89,7 +97,28 @@ class Login extends CI_Controller{
 		$this->session->pesan = $pesan;
 		$this->session->mark_as_flash('pesan');
 		redirect('?c=login');
-	}
+  }
+  
+  function submit_login_bank() {
+    $this->load->library('encryption');
+    $post = $this->input->post();
+    $db_bank = $this->load->database('bank', TRUE);
+    $db_bank->where('login', $post['login']);
+    // $db_bank->where('password', $this->encryption->encrypt($post['password']));
+    $q = $db_bank->get('pengguna');
+    $r = $q->row();
+    if($q->num_rows() > 0 and $post['password'] == $this->encryption->decrypt($r->password)){
+			$this->session->login = $post['login'];
+			$this->session->akses = 'bank';
+			$this->session->nama  = $r->nama;
+			redirect('?d=bank&c=ujian');
+		}else{
+			$pesan = 'login_gagal';
+			$this->session->pesan = $pesan;
+      $this->session->mark_as_flash('pesan');
+			redirect('?c=login&m=login_bank');
+		}
+  }
 
 	function logout_siswa(){
 		// logout peserta, status kembali menjadi 0 hanya jika status = 1
@@ -140,6 +169,17 @@ class Login extends CI_Controller{
 		$this->session->pesan = 'logout_sukses';
 		$this->session->mark_as_flash('pesan');
 		redirect('?c=login&m=login_proktor');
+  }
+  
+	function logout_bank(){
+		// hapus session
+		$arr_sess = array('login', 'akses', 'nama');
+		$this->session->unset_userdata($arr_sess);
+
+		// atur pesan
+		$this->session->pesan = 'logout_sukses';
+		$this->session->mark_as_flash('pesan');
+		redirect('?c=login&m=login_bank');
 	}
 
 	// Periksa status ujian, apakah sudah upload dan berada dalam rentang waktu yang sudah ditentukan

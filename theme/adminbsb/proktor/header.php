@@ -217,10 +217,10 @@ function is_active($th){
                           <span>Log Server</span>
                       </a>
                       <ul class="ml-menu">
-                        <li class="<?=css_class_active('server_tarik', 'm')?>">
+                        <li class="<?=css_class_active('sync_tarik', 'm')?>">
                           <a href="<?=site_url('?d=proktor&c=log&m=sync_tarik')?>" class=" waves-effect waves-block">Sync. Tarik</a>
                         </li>  
-                        <li class="<?=css_class_active('server_kirim', 'm')?>">
+                        <li class="<?=css_class_active('sync_kirim', 'm')?>">
                           <a href="<?=site_url('?d=proktor&c=log&m=sync_kirim')?>" class=" waves-effect waves-block">Sync. Kirim</a>
                         </li>  
                       </ul>

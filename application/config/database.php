@@ -116,3 +116,25 @@ $db['log'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
+
+$db['bank'] = array(
+	'dsn'	=> 'sqlite:bank/data.db',
+	'hostname' => '',
+	'username' => '',
+	'password' => '',
+	'database' => FCPATH . 'bank/data.db',
+	'dbdriver' => 'pdo',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => (ENVIRONMENT !== 'production'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => FALSE,
+	'stricton' => FALSE,
+	'failover' => array(),
+	'save_queries' => TRUE
+);
