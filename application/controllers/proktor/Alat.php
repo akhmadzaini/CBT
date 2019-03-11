@@ -58,6 +58,7 @@ class Alat extends Home_proktor{
     foreach($data as $k => $v){
       if($k > 6) {
         foreach($no_soal as $k2 => $v2){
+          if(empty($v2)) continue;
           $nilai = array();
           $nilai['ujian_id'] = $ujian_id;
           $nilai['nis'] = $v['C'];
