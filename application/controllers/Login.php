@@ -30,6 +30,14 @@ class Login extends CI_Controller{
 		}else{
 			redirect('?d=bank&c=ujian');
 		}
+  }
+  
+	function login_proktor_sekolah(){
+		if((empty($this->session->login)) || ($this->session->akses != 'proktor_sekolah')){
+			$this->load->view('proktor_sekolah/login');
+		}else{
+			redirect('?d=proktor_sekolah&c=nilai&m=upload_essay');
+		}
 	}
 
 	function submit_login_proktor(){
@@ -52,7 +60,17 @@ class Login extends CI_Controller{
 			redirect('?c=login&m=login_proktor');
 		}
 
-	}
+  }
+  
+  function submit_login_proktor_sekolah() {
+    $post = $this->input->post();
+    if($post['login'] == 'proktor' and $post['password'] == 'sekolah'){
+      $this->session->login = $post['login'];
+			$this->session->akses = 'proktor_sekolah';
+			$this->session->nama  = 'Proktor sekolah';
+			redirect('?d=proktor_sekolah&c=nilai&m=upload_essay');
+    }
+  }
 
 	function submit_login_siswa(){
 		$post = $this->input->post();
@@ -120,7 +138,21 @@ class Login extends CI_Controller{
 		}
   }
 
-	function logout_siswa(){
+  function cek_status_login_siswa(){
+    $nis = $this->session->nis;
+    $login = $this->session->login;
+    $ujian_id = $this->session->ujian_id;
+    $sql = "SELECT status FROM peserta
+            WHERE ujian_id= '$ujian_id' AND nis = '$nis' AND login = '$login'";
+    $r = $this->db->query($sql)->row();
+    if(empty($r)){
+      echo 0;
+    }else{
+      echo $r->status;
+    }
+  }
+
+  function logout_siswa(){
 		// logout peserta, status kembali menjadi 0 hanya jika status = 1
 		$this->db->where('login', $this->session->login);
 		$this->db->where('nis', $this->session->nis);
@@ -136,51 +168,32 @@ class Login extends CI_Controller{
 		$this->db->set('status', '3');
 		$this->db->update('peserta');
 		
-		// hapus session
-		$arr_sess = array('login', 'akses', 'nama', 'nis', 'ujian_id');
-		$this->session->unset_userdata($arr_sess);
-
-		// atur pesan
-		$this->session->pesan = 'logout_sukses';
-		$this->session->mark_as_flash('pesan');
-		redirect('?c=login');
+		$this->_general_logout('?c=login');
 	}
 
-  function cek_status_login_siswa(){
-    $nis = $this->session->nis;
-    $login = $this->session->login;
-    $ujian_id = $this->session->ujian_id;
-    $sql = "SELECT status FROM peserta
-            WHERE ujian_id= '$ujian_id' AND nis = '$nis' AND login = '$login'";
-    $r = $this->db->query($sql)->row();
-    if(empty($r)){
-      echo 0;
-    }else{
-      echo $r->status;
-    }
-  }
-
 	function logout_proktor(){
-		// hapus session
-		$arr_sess = array('login', 'akses', 'nama');
-		$this->session->unset_userdata($arr_sess);
-
-		// atur pesan
-		$this->session->pesan = 'logout_sukses';
-		$this->session->mark_as_flash('pesan');
-		redirect('?c=login&m=login_proktor');
+		$this->_general_logout('?c=login&m=login_proktor');
   }
   
 	function logout_bank(){
-		// hapus session
+		$this->_general_logout('?c=login&m=login_bank');
+  }
+  
+	function logout_proktor_sekolah(){
+		$this->_general_logout('?c=login&m=login_proktor_sekolah');
+  }
+  
+  // logout secara general
+  private function _general_logout($redirect){
+    // hapus session
 		$arr_sess = array('login', 'akses', 'nama');
 		$this->session->unset_userdata($arr_sess);
 
 		// atur pesan
 		$this->session->pesan = 'logout_sukses';
 		$this->session->mark_as_flash('pesan');
-		redirect('?c=login&m=login_bank');
-	}
+		redirect($redirect);
+  }
 
 	// Periksa status ujian, apakah sudah upload dan berada dalam rentang waktu yang sudah ditentukan
 	private function __cek_ujian($ujian_id){

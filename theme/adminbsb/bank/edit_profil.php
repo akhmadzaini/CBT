@@ -1,4 +1,4 @@
-<?php $this->load->view('proktor/header')?>
+<?php $this->load->view('bank/header')?>
 
     <section class="content">
         <div class="container-fluid">
@@ -68,7 +68,7 @@
         </div>
     </section>
 
-<?php $this->load->view('proktor/footer')?>
+<?php $this->load->view('bank/footer')?>
 
 <script>
     $('.btn-simpan').on('click', function(evt){
