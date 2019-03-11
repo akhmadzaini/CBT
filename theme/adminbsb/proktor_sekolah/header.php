@@ -128,10 +128,20 @@ function is_active($th){
             </a>
           </li>                      -->
           <li class="<?=css_class_active('nilai')?>">
-            <a href="?d=bank&c=ujian" class="waves-effect waves-block">
+            <a href="javascript:void(0)" class="menu-toggle waves-effect waves-block">
               <i class="material-icons">assignment</i>
-              <span>Unggah nilai essay</span>
+              <span>Nilai essay</span>
             </a>
+
+            <ul class="ml-menu">
+              <li class="<?=css_class_active('upload_essay', 'm')?>">
+                <a href="<?=site_url('?d=proktor_sekolah&c=nilai&m=upload_essay')?>" class=" waves-effect waves-block">Unggah</a>
+              </li>   
+              <li class="<?=css_class_active('download_essay', 'm')?>">
+                <a href="<?=site_url('?d=proktor_sekolah&c=nilai&m=download_essay')?>" class=" waves-effect waves-block">Unduh template</a>
+              </li>   
+            </ul>
+
           </li>                        
           <li class="header">LABELS</li>
           <li>

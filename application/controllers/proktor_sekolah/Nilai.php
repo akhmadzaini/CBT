@@ -4,14 +4,107 @@
 
 require_once APPPATH . 'controllers/proktor_sekolah/Home_proktor_sekolah.php';
 require_once FCPATH . 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Nilai extends Home_proktor_sekolah{
+
+  function download_essay() {
+    $sql = 'SELECT ujian_id, judul, status_soal, mulai, selesai, jml_soal
+    FROM ujian WHERE judul <> "" ORDER BY mulai ASC';
+    $data['ujian'] = $this->db->query($sql)->result();
+    
+    // ambil data pengelompokan
+    $sql = "SELECT DISTINCT kelas,nama_sekolah FROM peserta 
+    ORDER BY  nama_sekolah, kelas ASC";
+    $data['kelompok'] = $this->db->query($sql)->result();
+    
+    $this->load->view('proktor_sekolah/download_essay', $data);
+  }
+
+  function do_download_essay() {
+    $ujian_id = $this->input->get('ujian_id');
+    $kelas = $this->input->get('kelas');
+
+    $sql = "SELECT judul FROM ujian WHERE ujian_id = '$ujian_id'";
+    $data = $this->db->query($sql)->row();
+
+    // Create new Spreadsheet object
+    $spreadsheet = new Spreadsheet();
+
+    // Atur judul kolom
+    $spreadsheet->setActiveSheetIndex(0)
+    ->setCellValue('B2', 'Mapel')
+    ->setCellValue('C2', $data->judul)
+    ->setCellValue('B3', 'Kelas')
+    ->setCellValue('C3', $kelas)
+    ->setCellValue('B5', 'Nilai Maksimal')
+    ->setCellValue('B6', 'No')
+    ->setCellValue('C6', 'NIS')
+    ->setCellValue('D6', 'Login')
+    ->setCellValue('E6', 'Nama');
+
+    // Atur judul kolom yang dinamis
+    $sql = "SELECT no_soal, skor FROM soal 
+            WHERE essay = 1 AND ujian_id = '$ujian_id' 
+            ORDER BY no_soal";
+    $data = $this->db->query($sql)->result();
+
+    $kolom = 6;
+    foreach($data as $r){
+      $spreadsheet->setActiveSheetIndex(0)
+      ->setCellValueByColumnAndRow($kolom, 5, $r->skor)
+      ->setCellValueByColumnAndRow($kolom++, 6, $r->no_soal);
+    }
+
+    // Atur nama-nama siswa
+    $sql = "SELECT a.nis, a.login, a.nama, a.nama_sekolah, b.judul
+            FROM peserta a
+            LEFT JOIN ujian b ON a.ujian_id = b.ujian_id
+            WHERE a.ujian_id = '$ujian_id'
+            AND a.kelas = '$kelas'
+            ORDER BY a.nis";
+    $data = $this->db->query($sql)->result();
+    $baris = 7;
+    foreach($data as $r){
+      $spreadsheet->setActiveSheetIndex(0)
+      ->setCellValueByColumnAndRow(2, $baris, $baris - 6)
+      ->setCellValueByColumnAndRow(3, $baris, $r->nis)
+      ->setCellValueByColumnAndRow(4, $baris, strtoupper($r->login))
+      ->setCellValueByColumnAndRow(5, $baris++, strtoupper($r->nama));
+      $nama_sekolah=strtoupper($r->nama_sekolah);
+      $judul=strtoupper($r->judul);
+    }
+
+    // Atur lebar kolom
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('B')->setWidth(5);
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('C')->setWidth(15);
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('D')->setWidth(15);
+    $spreadsheet->setActiveSheetIndex(0)->getColumnDimension('E')->setWidth(45);
+
+    // Redirect output to a client’s web browser (Xlsx)
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="'.$nama_sekolah.'""'.$judul.'"essay.xlsx"');
+    header('Cache-Control: max-age=0');
+    // If you're serving to IE 9, then the following may be needed
+    header('Cache-Control: max-age=1');
+
+    // If you're serving to IE over SSL, then the following may be needed
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+    header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header('Pragma: public'); // HTTP/1.0
+
+    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $writer->save('php://output');
+    exit;
+  }  
 
   function upload_essay() {
     // ambil data ujian
     $this->db->select('ujian_id');
     $this->db->select('judul');
+    $this->db->select('mulai as tgl');
     $data['ujian'] = $this->db->get('ujian')->result();
     
     // ambil data server
