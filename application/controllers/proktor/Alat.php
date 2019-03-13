@@ -287,10 +287,21 @@ class Alat extends Home_proktor{
 			redirect('?d=proktor&c=alat&m=unggah_foto');
 		}else{
       $file_zip = $this->upload->data('full_path');
-      $dir_foto = FCPATH . 'public/foto_siswa/';
-      ekstrak_zip($file_zip, $dir_foto);
+      $dir_upload = FCPATH . 'public/'. string_acak(5);
+      ekstrak_zip($file_zip, $dir_upload);
+      $this->gagal_unggah = array();
+      $this->sukses_unggah = 0;
+      $arr_nis = $this->_registered_nis();
+      $this->_scan_foto($dir_upload, $arr_nis);
       unlink($file_zip);
-      $pesan = "<div class=\"alert alert-success\">Arsip foto telah terunggah</div>";
+      rrmdir($dir_upload);
+      $pesan = '';
+      if(count($this->gagal_unggah) > 0){
+        $arr = implode('</li><li>' , $this->gagal_unggah);
+        $arr = '<li>'. $arr .'</li>';
+        $pesan = 'Terdapat beberapa foto yang gagal diunggah, karena NIS tidak ditemukan pada database, antara lain : <ol>'. $arr .'</ol>';
+      }
+      $pesan = "<div class=\"alert alert-info\">Arsip foto telah terunggah sebanyak ". $this->sukses_unggah ." berkas. $pesan</div>";
 			$this->session->pesan = $pesan;
 			$this->session->mark_as_flash('pesan');
 			redirect('?d=proktor&c=alat&m=unggah_foto');
@@ -303,6 +314,43 @@ class Alat extends Home_proktor{
     $date = $ntp->getTime();
     $data['ntp_time'] = $date->setTimezone(new DateTimeZone('Asia/Jakarta'));
     $this->load->view('proktor/alat/jam_sistem', $data);
+  }
+
+  private function _registered_nis() {
+    $this->db->select('nis');
+    $rs = $this->db->get('peserta')->result();
+    $hasil = array();
+    foreach($rs as $r){
+      $hasil[] = $r->nis;
+    }
+    return $hasil;
+  }
+
+  private function _scan_foto($dir_upload, $arr_nis ) {
+    $ffs = scandir($dir_upload);
+    $dir_foto = FCPATH . '/public/foto_siswa/';
+    if(!file_exists($dir_foto)) mkdir($dir_foto);
+    unset($ffs[array_search('.', $ffs, true)]);
+    unset($ffs[array_search('..', $ffs, true)]);    
+    
+    foreach($ffs as $ff){
+      $src = $dir_upload . '/' . $ff;
+      if(is_dir($src)) {
+        $this->_scan_foto($src, $arr_nis);
+      }else{
+        $path = pathinfo($src);
+        // copy hanya yang jpg saja
+        if(strtolower($path['extension']) == 'jpg' or strtolower($path['extension'] == 'jpeg')) {
+          if(in_array($path['filename'], $arr_nis)){
+            $dest = $dir_foto . $path['filename'] . '.jpg';
+            copy($src, $dest);
+            $this->sukses_unggah++;
+          }else{
+            $this->gagal_unggah[] = $ff;
+          }
+        }
+      }
+    }
   }
 	
 }
