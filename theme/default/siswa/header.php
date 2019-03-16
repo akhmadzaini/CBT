@@ -31,11 +31,14 @@
                             <h3 style="margin-top: 0"><?=get_app_config('NAMA_SEKOLAH')?> </h3>
                         </div>
                     </div> <div id="welcome">
-                        <!--
                         <div id="avatar">
+                        <?php if(file_exists(FCPATH . 'public/foto_siswa/' . $this->session->nis . '.jpg')):?>
+                            <img src="<?=base_url('public/foto_siswa/' . $this->session->nis . '.jpg')?>" width="60px" height="60px"
+                            style="object-fit: cover">
+                        <?php else:?>
                             <img src="<?=base_url('theme/default/avatar.png')?>">
+                        <?php endif?>
                         </div>
-                        -->
                         <div id="selamat">
                             <p>Selamat Datang</p>
                             <p><b id="nama_siswa2"><?=$this->session->nama?></b></p>
