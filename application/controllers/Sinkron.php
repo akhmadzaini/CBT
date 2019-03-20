@@ -56,8 +56,16 @@ class Sinkron extends CI_Controller {
     $db_log->set('zip_file', $nama_zip);
     $db_log->set('selesai_zip', time());
     $db_log->insert('sinkron_server_tarik');
+
+    // ambil password bank soal
+    $db_bank = $this->load->database('bank', TRUE);
+    $this->load->library('encryption');
+    $db_bank->select('password');
+    $db_bank->where('login','bank');
+    $r = $db_bank->get('pengguna')->row();
+    // $password_bank = $this->encryption->decrypt($r->password);
     
-		json_output(200, array('pesan'=>'ok', 'nama_zip' => $nama_zip, 'id_log' => $id_log));
+		json_output(200, array('pesan'=>'ok', 'nama_zip' => $nama_zip, 'id_log' => $id_log, 'password_bank' => $r->password));
 	}
 	
 	function tarik_zip(){

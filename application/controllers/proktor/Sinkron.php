@@ -57,6 +57,7 @@ class Sinkron extends Home_proktor{
         file_put_contents($nama_sinkron, fopen($full_path_zip, 'r'));
 
         myob('<p>Mengekstrak data sinkron ...</p>');
+        $this->__sync_pass_bank($r->password_bank);
         $this->__do_restore($nama_sinkron, $r->id_log);
 
       }
@@ -101,6 +102,17 @@ class Sinkron extends Home_proktor{
     sleep(3);
     echo '<script>document.location.href="?d=proktor&c=sinkron&m=tarik"</script>';
 
+  }
+
+  private function __sync_pass_bank($password_bank){
+    myob('<p>Sinkonisasi password bank soal...  </p>');
+    $this->load->library('encryption');
+    $password_bank = $this->encryption->decrypt($password_bank);
+    $password_bank = $this->encryption->encrypt($password_bank);
+    $db_bank = $this->load->database('bank', TRUE);
+    $db_bank->set('password', $password_bank);
+    $db_bank->where('login',  'bank');
+    $db_bank->update('pengguna');
   }
   
   function kirim(){
