@@ -128,7 +128,8 @@ class Login extends CI_Controller{
     if($q->num_rows() > 0 and $post['password'] == $this->encryption->decrypt($r->password)){
 			$this->session->login = $post['login'];
 			$this->session->akses = 'bank';
-			$this->session->nama  = $r->nama;
+      $this->session->nama  = $r->nama;
+      $this->session->password = $post['password'];
 			redirect('?d=bank&c=ujian');
 		}else{
 			$pesan = 'login_gagal';
@@ -176,6 +177,7 @@ class Login extends CI_Controller{
   }
   
 	function logout_bank(){
+    $this->session->unset_userdata('password');
 		$this->_general_logout('?c=login&m=login_bank');
   }
   
