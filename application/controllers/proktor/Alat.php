@@ -204,10 +204,13 @@ class Alat extends Home_proktor{
 	} 
 	
 	function do_restore(){
+    // 0. setting ini
+    ini_set('post_max_size', '100M');
+    ini_set('upload_max_filesize', '100M');
+
 		// 1. unggah backup
 		$config['upload_path']          = './public/';
 		$config['allowed_types']        = 'zip';
-		$config['max_size']             = 1048576;
 		
 		$this->load->library('upload', $config);
 		
