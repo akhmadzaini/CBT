@@ -65,7 +65,13 @@ class Sinkron extends CI_Controller {
     $r = $db_bank->get('pengguna')->row();
     // $password_bank = $this->encryption->decrypt($r->password);
     
-		json_output(200, array('pesan'=>'ok', 'nama_zip' => $nama_zip, 'id_log' => $id_log, 'password_bank' => $r->password));
+    json_output(200, array('pesan'=>'ok', 
+                          'nama_zip' => $nama_zip, 
+                          'id_log' => $id_log, 
+                          'password_bank' => $r->password,
+                          'LOGIN_SERVICE' => get_app_config('LOGIN_SERVICE'),
+                          'PASS_SERVICE' => get_app_config('PASS_SERVICE')
+                        ));
 	}
 	
 	function tarik_zip(){
@@ -214,7 +220,7 @@ class Sinkron extends CI_Controller {
   
 	private function __cek_token(){
 		$token = $this->input->post('token');
-		if($token != 'kEXCZ9KjumHxTO8dsVyg'){
+		if($token != 'XdbtHR6p5msLvCNk'){
 			json_output(200, array('pesan' => 'token_gagal', 'post'=> $_POST));
 			die();
 		}

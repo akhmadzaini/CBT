@@ -10,7 +10,7 @@ class Sinkron extends Home_proktor{
   
   function __construct(){
     parent::__construct();
-    $this->token = 'kEXCZ9KjumHxTO8dsVyg';
+    $this->token = 'XdbtHR6p5msLvCNk';
     ini_set('memory_limit', '512M');
   }
   
@@ -56,8 +56,12 @@ class Sinkron extends Home_proktor{
         myob('<p>Sedang mengunduh, mohon tunggu, proses ini memerlukan waktu, bergantung dari koneksi... '. $r->nama_zip .' </p>');
         file_put_contents($nama_sinkron, fopen($full_path_zip, 'r'));
 
-        myob('<p>Mengekstrak data sinkron ...</p>');
+        myob('<p>Sinkronisasi password ...</p>');
         $this->__sync_pass_bank($r->password_bank);
+        modif_app_config('LOGIN_SERVICE', $r->LOGIN_SERVICE);
+        modif_app_config('PASS_SERVICE', $r->PASS_SERVICE);
+
+        myob('<p>Mengekstrak data sinkron ...</p>');
         $this->__do_restore($nama_sinkron, $r->id_log);
 
       }
