@@ -1,4 +1,7 @@
 <?php $this->load->view('proktor/header')?>
+<!-- datatable -->
+<link href="<?=base_url('theme/adminbsb/')?>plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+
 <style>
   .table-danger {
     background-color: #fb483a !important;
@@ -28,7 +31,7 @@
           <p>
             <a href="?d=proktor&c=log&m=del_sync_kirim" class="btn btn-primary waves-effect">Bersihkan log</a>
           </p>
-          <table class="table table-hover">
+          <table class="table table-hover dtable dt-responsive">
             <thead>
               <tr>
                 <th>#</th>
@@ -63,3 +66,14 @@
 </div>
 </section>
 <?php $this->load->view('proktor/footer')?>
+ <!-- Jquery datatable -->
+ <script src="<?=base_url('theme/adminbsb/')?>plugins/jquery-datatable/jquery.dataTables.js"></script>
+ <script src="<?=base_url('theme/adminbsb/')?>plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js"></script>
+
+<script>
+  $(function() {
+    $('.dtable').dataTable({
+      responsive: true
+    });
+  });
+</script>
