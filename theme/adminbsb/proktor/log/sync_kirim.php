@@ -47,8 +47,8 @@
               <tr <?=$cls?>>
                 <td><?=$n++?></td>
                 <td><?=$r->ip?></td>
-                <td><?=$r->ujian_id?></td>
-                <td><?=$r->id_server?></td>
+                <td><?=(array_key_exists($r->ujian_id, $arr_ujian)? $arr_ujian[$r->ujian_id] : $r->ujian_id)?></td>
+                <td><?=(array_key_exists($r->id_server, $arr_sekolah)? $arr_sekolah[$r->id_server] : $r->id_server)?></td>
                 <td><?=date('d M Y h:i:s', $r->mulai)?></td>
                 <td><?=$selesai?></td>
               </tr>

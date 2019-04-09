@@ -18,9 +18,25 @@ class Log extends Home_proktor{
   }
   
   function sync_kirim() {
+    // membuat array ujian
+    $rs = $this->db->query('SELECT ujian_id, judul FROM ujian')->result();
+    $arr_ujian = array();
+    foreach($rs as $r){
+      $arr_ujian[$r->ujian_id] = $r->judul;
+    }
+    
+    // membuat array sekolah
+    $rs = $this->db->query('SELECT DISTINCT server, nama_sekolah FROM peserta')->result();
+    $arr_sekolah = array();
+    foreach($rs as $r){
+      $arr_sekolah[$r->server] = $r->nama_sekolah;
+    }
+
     $db_log = $this->load->database('log', TRUE);
     $db_log->order_by('mulai', 'desc');
     $data['log'] = $db_log->get('sinkron_server_kirim')->result();
+    $data['arr_ujian'] = $arr_ujian;
+    $data['arr_sekolah'] = $arr_sekolah;
     $this->load->view('proktor/log/sync_kirim', $data);
   }
 
