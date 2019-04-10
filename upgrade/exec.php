@@ -32,11 +32,16 @@ shell_exec('git clone https://github.com/akhmadzaini/CBT.git 2>&1' );
 
 display('hapus sistem sebelumnya ...<br/>');
 display(shell_exec('rm /var/www/application/controllers -rf'));
+display(shell_exec('rm /var/www/application/helpers -rf'));
 display(shell_exec('rm /var/www/theme -rf'));
 
 // memindah controller
 display('memindah controller ke lokasi baru ...<br/>');
 display(shell_exec('mv '. $dir_git .'application/controllers /var/www/application/controllers'));
+
+// memindah helper
+display('memindah helper ke lokasi baru ...<br/>');
+display(shell_exec('mv '. $dir_git .'application/helpers /var/www/application/helpers'));
 
 // memindah theme
 display('memindah theme ke lokasi baru ...<br/>');
