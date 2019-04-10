@@ -61,6 +61,24 @@
 
             $.post('<?=site_url("?d=proktor&c=config&m=theme_color")?>', {'theme' : newTheme});
         });
+
+        $(document).on('click', '.tombol_upgrade', function(evt){
+          evt.preventDefault();
+            swal({
+                title: "Anda yakin ?",
+                text: "Anda akan memperbarui sistem CBT, anda yakin ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Ya, Saya ingin memperbarui sistem",
+                cancelButtonText: "Tidak",
+                closeOnConfirm: true                
+            },function(keluar){
+              if(keluar){
+                location.href = "<?='upgrade/exec.php'?>";
+              }
+            });
+        });
     });
 </script>
 </html>

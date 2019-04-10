@@ -230,7 +230,13 @@ function is_active($th){
                             <i class="material-icons">person</i>
                             <span>Edit Profil</span>
                         </a>
-                    </li>                        
+                    </li>    
+                    <li class="<?=css_class_active('profil')?> tombol_upgrade">
+                        <a href="#" class="waves-effect waves-block">
+                            <i class="material-icons">cached</i>
+                            <span>Upgrade Sistem</span>
+                        </a>
+                    </li>                      
                     <li class="header">LABELS</li>
                     <li>
                         <a href="#" class="tombol_logout" class="waves-effect waves-block">
