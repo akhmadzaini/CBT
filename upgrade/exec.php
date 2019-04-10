@@ -1,4 +1,8 @@
-<?php ob_end_flush(); ob_implicit_flush(); sleep(1);?>
+<?php 
+if(empty($_SESSION['login'])) header('Location: ../index.php?c=login&m=login_proktor');
+if($_SESSION['akses'] != 'proktor') header('Location: ../index.php?c=login&m=login_proktor');
+ob_end_flush(); ob_implicit_flush(); sleep(1);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
