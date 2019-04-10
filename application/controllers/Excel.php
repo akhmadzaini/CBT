@@ -165,6 +165,70 @@ class Excel extends CI_Controller {
 		json_output(200, $data);
   }
   
+  function tarik_nilai_sekolah(){
+		$post = $this->input->post();
+		if(empty($post)){
+			die('request tidak sah');
+		}
+
+		// Periksa apakah id ujian telah tersedia
+		$this->db->where("ujian_id='$post[ujian_id]'");
+		if($this->db->count_all_results('ujian') == 0){
+			json_output(200, array('pesan' => 'ujian_tak_tersedia'));
+			die();
+    }
+    
+    // ==============Langkah pengambilan data jawaban pilihan ganda
+    // ambil data kunci jawaban
+    $sql = "SELECT no_soal, jawaban, skor, indikator
+          FROM soal
+          WHERE essay = 0
+          AND ujian_id = '$post[ujian_id]'
+          ORDER BY no_soal";
+    $kunci_jawaban = $this->db->query($sql)->result();
+    $jml_soal = count($kunci_jawaban);
+
+		// Generate query kolom untuk no soal
+		$sql_add = array();
+		foreach($kunci_jawaban as $r){
+      $no = $r->no_soal;
+			$sql_add[] = "(SELECT pilihan FROM  peserta_jawaban 
+						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS no_$no";
+		}
+    $sql_add = implode(',', $sql_add);
+
+    //================Langkah pengambilan nilai essay
+    $sql = "SELECT no_soal, skor, indikator
+          FROM soal
+          WHERE essay = 1
+          AND ujian_id = '$post[ujian_id]'
+          ORDER BY no_soal";
+    $soal_essay = $this->db->query($sql)->result();
+    // Generate query kolom untuk no soal
+		$sql_add2 = array();
+		foreach($soal_essay as $r){
+      $no = $r->no_soal;
+			$sql_add2[] = "(SELECT essay_skor FROM  peserta_jawaban 
+						WHERE ujian_id = a.ujian_id AND nis = a.nis AND login = a.login AND no_soal = $no) AS nilai_essay_$no";
+		}
+    $sql_add2 = implode(',', $sql_add2);
+    if (!empty($sql_add2)) $sql_add2 = ',' . $sql_add2 ;
+		
+		$sql = "SELECT a.nis, a.nama, a.nama_sekolah, a.status, a.last_login,	$sql_add $sql_add2
+				FROM peserta a
+        WHERE a.ujian_id = '$post[ujian_id]'
+          AND a.nama_sekolah = '$post[nama_sekolah]'
+        ORDER BY a.nama_sekolah, a.kelas, a.server, a.login";
+        
+		$data = array(
+      'pesan' => 'ok' , 
+      'data' => $this->db->query($sql)->result_array(), 
+      'kunci_jawaban' => $kunci_jawaban,
+      'soal_essay' => $soal_essay
+    );
+		json_output(200, $data);
+  }
+  
   function tarik_nilai_essay() {
     $post = $this->input->post();
 		if(empty($post)){
