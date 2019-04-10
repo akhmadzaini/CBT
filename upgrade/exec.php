@@ -16,55 +16,31 @@ function display($echo){
   echo $echo; 
 }
 
-// system recursive delete
-function rrmdir($dir) {
-  if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
-    display(shell_exec(sprintf("rd /s /q %s 2>&1", escapeshellarg('CBT'))));
-  }else{
-    display(shell_exec(sprintf("rm -rf %s 2>&1", escapeshellarg('CBT'))));
-  }
-}
-
-// copy entire folder
-function xcopy($src, $dest) {
-  if (file_exists ( $dest )) rrmdir ( $dest );
-  if (is_dir ( $src )) {
-    mkdir ( $dest );
-    $files = scandir ( $src );
-    foreach ( $files as $file )
-    if ($file != "." && $file != "..")
-    xcopy ( "$src/$file", "$dest/$file" );
-  } else if (file_exists ( $src ))
-  copy ( $src, $dest );
-}
-
 // set time limit
 ini_set('max_execution_time', 0); 
 
-$dir_upgrade = dirname(__FILE__);
-$dir_git = $dir_upgrade . '/CBT';
+$dir_git = dirname(__FILE__) . '/CBT/';
 
 // bersihkan folder upgrade yang lama
 if(file_exists($dir_git)){
   display('membersihkan sisa upgrade yang lama ...<br/>');
-  shell_exec('rm ' . $dir_git . ' -rf 2>&1');
+  display(shell_exec('rm ' . $dir_git . ' -rf 2>&1'));
 }
 
 display('mengunduh pembaruan, mohon ditunggu, proses ini bergantung dari kecepatan koneksi internet ...<br/>');
 shell_exec('git clone https://github.com/akhmadzaini/CBT.git 2>&1' );
 
-// pindah directory
-display('pindah direktori ...<br/>');
-shell_exec('cd ' . $dir_git . ' 2>&1' );
+display('hapus sistem sebelumnya ...<br/>');
+display(shell_exec('rm /var/www/application/controllers -rf'));
+display(shell_exec('rm /var/www/theme -rf'));
 
-// menyalin gambar
-display('menyalin controller ...<br/>');
-shell_exec('cp application/controllers ../../application/controllers  -R');
+// memindah controller
+display('memindah controller ke lokasi baru ...<br/>');
+display(shell_exec('mv '. $dir_git .'application/controllers /var/www/application/controllers'));
 
-// menyalin gambar
-display('menyalin theme ...<br/>');
-shell_exec('cp theme ../../theme  -R');
-
+// memindah theme
+display('memindah theme ke lokasi baru ...<br/>');
+display(shell_exec('mv '. $dir_git .'theme /var/www/theme'));
 
 
 ?>
