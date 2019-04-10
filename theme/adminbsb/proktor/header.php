@@ -234,7 +234,7 @@ function is_active($th){
                     <li class="<?=css_class_active('profil')?> tombol_upgrade">
                         <a href="#" class="waves-effect waves-block">
                             <i class="material-icons">cached</i>
-                            <span>Upgrade Sistem xx</span>
+                            <span>Upgrade Sistem</span>
                         </a>
                     </li>                      
                     <li class="header">LABELS</li>

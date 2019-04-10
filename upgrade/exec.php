@@ -46,3 +46,7 @@ display(shell_exec('mv '. $dir_git .'theme /var/www/theme'));
 ?>
 </body>
 </html>
+
+<script>
+  window.location.href = "../index.php?d=proktor&c=dashboard";
+</script>
